@@ -14,10 +14,15 @@ async fn main() {
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: commands::commands(),
+            prefix_options: poise::PrefixFrameworkOptions {
+                prefix: Some("~".into()),
+                case_insensitive_commands: true,
+                ..Default::default()
+            },
             ..Default::default()
         })
         .token(std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN"))
-        .intents(serenity::GatewayIntents::non_privileged())
+        .intents(serenity::GatewayIntents::non_privileged()| serenity::GatewayIntents::MESSAGE_CONTENT)
         .user_data_setup(move |_ctx, _ready, _framework| Box::pin(async move { Ok(Data {}) }));
 
     framework.run().await.unwrap();
