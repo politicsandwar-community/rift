@@ -1,7 +1,3 @@
-
-bot/target/
-
-**/*.rs.bk
-
-
 .env
+**/*.rs.bk
+target/
