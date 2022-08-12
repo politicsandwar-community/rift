@@ -4,10 +4,13 @@ mod types;
 
 use poise::serenity_prelude as serenity;
 
+use dotenv::dotenv;
+
 use crate::structs::Data;
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: commands::commands(),
