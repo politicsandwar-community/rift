@@ -1,5 +1,6 @@
 mod commands;
 mod structs;
+mod traits;
 mod types;
 
 use poise::serenity_prelude as serenity;
@@ -26,4 +27,5 @@ async fn main() {
         .user_data_setup(move |_ctx, _ready, _framework| Box::pin(async move { Ok(Data {}) }));
 
     framework.run().await.unwrap();
+    println!("STARTED");
 }
