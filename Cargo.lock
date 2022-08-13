@@ -840,6 +840,7 @@ dependencies = [
 name = "rift-bot"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "dotenv",
  "poise",
  "serenity",
