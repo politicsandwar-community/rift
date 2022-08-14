@@ -1,3 +1,5 @@
 .env
 **/*.rs.bk
 target/
+db/data
+private.pem
