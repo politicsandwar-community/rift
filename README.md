@@ -1,15 +1,12 @@
-# Welcome to Rift!
- 
- Rift is a free-to-use multi purpose Discord bot for the browser game Politics & War.
+# Welcome to Rift
 
-# Home
+Rift is a free-to-use multi purpose Discord bot for Politics & War!
 
- This bot has been originally developed by Village in python.
+## About Rift
 
-# About this project
+Rift was originally developed by Village for use by the community. Now development has been taken over by the community and it is being improved and rewritten in Rust!
 
- This project aim to re-code it in rust along with the game community and being open source.
+## Contributing
 
-# Future Development
- 
- Our goal is to write a fast-clean-complete bot with lot of features.
+If you want to contribute, please join the Politics and Development server on Discord [here](https://discord.gg/Rrq56nMYSK).
+More information about the current state of the project and its various guidelines can be found on the Notion page [here](https://mrvillage.notion.site/Rift-6e5e2a4ea7ab40c48b7210a7246e5295) including a Getting Started guide found [here](https://www.notion.so/mrvillage/Getting-Started-9b10604aee2a4a5384c6acd3be061084).
