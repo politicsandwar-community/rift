@@ -1,32 +1,23 @@
 name: base-commit-check
 
-on: [push, pull_request]
+on: push
 
 jobs:
-  simple:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-
-    name: Test `cargo check/test` on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  build:
+     runs-on: ubuntu-latest
 
     env:
       CARGO_TERM_COLOR: always
 
     steps:
       - uses: actions/checkout@v3
-
-      
+ 
       - run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
-      - uses: ./
-        with:
-          workspaces: tests
+      - uses: ./bot/
 
-      - run: |
-          cargo chippy
-          cargo check
-          cargo test
+      - name: Build
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose
