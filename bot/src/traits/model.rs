@@ -1,9 +1,11 @@
-use crate::types::Error;
+use crate::{structs::Data, types::Error};
 use async_trait::async_trait;
 
 #[async_trait]
 pub trait Model: std::clone::Clone {
-    fn new() -> Self;
+    const TABLE: &'static str;
 
-    async fn save() -> Result<(), Error>;
+    // fn new() -> Self;
+
+    async fn save(&mut self, data: &Data, insert: bool) -> Result<(), Error>;
 }
