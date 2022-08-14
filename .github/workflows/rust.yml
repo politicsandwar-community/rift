@@ -23,11 +23,4 @@ jobs:
       - run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
-      - uses: ./
-        with:
-          workspaces: bot
-
-      - run: |
-          cargo check
-          cargo test
-        working-directory: bot
+          cargo build
