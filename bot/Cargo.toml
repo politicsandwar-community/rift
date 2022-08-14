@@ -4,11 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio = {version = "1", features = ["rt-multi-thread"]}
+tokio = { version = "1.20.1", features = ["rt-multi-thread"] }
 poise = "0.3.0" 
 dotenv = "0.15.0"
+async-trait = "0.1.57"
+model_derive = {path = "model_derive"}
+sqlx = { version = "0.6.1", features = ["runtime-tokio-rustls", "postgres", "bigdecimal", "uuid"] }
+uuid = "1.1.2"
+bigdecimal = "0.3.0"
+dashmap = { version = "5.3.4" }
 
 [dependencies.serenity]
-version = "0.11"
+version = "0.11.5"
 default-features = false
 features = ["builder", "client", "gateway", "model", "utils", "collector"]
