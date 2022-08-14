@@ -1,0 +1,65 @@
+version: "3.8"
+
+x-logging:
+  &default-logging
+  options:
+    max-size: "10MB"
+    max-file: "10"
+
+x-large-logging:
+  &large-logging
+  options:
+    max-size: "100MB"
+    max-file: "10"
+
+services:
+  bot:
+    container_name: rift-bot
+    build: ./bot
+    depends_on:
+      - db
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+      GUILD_IDS: ${GUILD_IDS}
+      VERIFIED_BOT_KEY: ${VERIFIED_BOT_KEY}
+      PNW_API_KEY: ${PNW_API_KEY}
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${DB_NAME:-postgres}
+    volumes:
+      - ./private.pem:/private.pem
+    logging: *default-logging
+
+  rest:
+    container_name: rift-rest
+    image: postgrest/postgrest:v9.0.0
+    depends_on:
+      - db
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMA: public,storage
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+    logging: *default-logging
+
+  db:
+    container_name: rift-db
+    image: mrvillage/postgres:latest
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    restart: unless-stopped
+    ports:
+      - ${DB_PORT:-5432}:5432
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
+    logging: *large-logging
