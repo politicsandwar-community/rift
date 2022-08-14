@@ -2,6 +2,7 @@ name: simple
 
 on: push
 
+
 jobs:
   simple:
     strategy:
