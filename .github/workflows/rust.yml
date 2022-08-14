@@ -2,6 +2,7 @@ name: simple
 
 on: push
 
+- uses: Swatinem/rust-cache@v2
 
 jobs:
   simple:
