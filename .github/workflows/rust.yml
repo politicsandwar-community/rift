@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
 
-    # Half of this code is designed to cahce the dependencys, which doesnt work
+    # Half of this code is designed to cahce the dependencys, which doesnt work only the run section at the very end anyone should care about
     name: Test `cargo check/test` on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
@@ -24,5 +24,5 @@ jobs:
       - run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
-          cargo build
           cargo clippy
+          cargo fmt
