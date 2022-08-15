@@ -24,7 +24,5 @@ jobs:
       - run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
-
-        # This is all the CI does currently
           cargo build
           cargo clippy
