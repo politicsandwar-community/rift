@@ -47,12 +47,12 @@ CREATE TABLE "nations_private" (
 );
 
 CREATE TABLE "alliances" (
-  "id" integer,
-  "name" text,
+  "id" integer Not Null,
+  "name" text Not Null,
   "acronym" text,
-  "score" numeric,
-  "color" smallint,
-  "date" timestamp with time zone,
+  "score" numeric Not Null,
+  "color" smallint Not Null,
+  "date" timestamp with time zone Not Null,
   "accepts_members" boolean,
   "flag" text,
   "forum_link" text,
