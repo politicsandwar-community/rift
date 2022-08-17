@@ -1,22 +1,28 @@
-name: Rust
+name: simple
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-env:
-  CARGO_TERM_COLOR: always
+on: push
 
 jobs:
-  build:
+  simple:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
 
-    runs-on: ubuntu-latest
+    # Half of this code is designed to cahce the dependencys, which doesnt work only the run section at the very end anyone should care about
+    name: Test `cargo check/test` on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CARGO_TERM_COLOR: always
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v2
+
+      
+      - run: |
+          rustup set auto-self-update disable
+          rustup toolchain install stable --profile minimal
+          cargo clippy
+          cargo fmt
