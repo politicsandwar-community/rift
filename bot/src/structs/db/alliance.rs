@@ -1,24 +1,23 @@
 use model_derive::Model;
+use bigdecimal::BigDecimal;
+use time::OffsetDateTime;
+
+use crate::structs::resources::Resources;
 
 #[derive(Clone, Model)]
 #[table = "alliances"]
-#[primary_key = "alliance_id"]
-pub struct Alliance {
-    pub alliance_id: Option<i64>,
-    pub name: String,
-    
-  
-    pub acronym: String,
-    pub score: Float,
-    pub color: String,
-    pub created_date: DateTimeAuto,
-    pub average_score: Float,
-    pub accept_members: Boolean,
-    pub flag: String,
-    pub forum_link: String,
-    pub discord_link: String,
-    pub wiki_link: String,
-
-
-    pub nations: Array<Nation>,
+#[primary_key = "id"]
+pub struct alliance {
+  pub id: Option<i32>,
+  pub name: Option<String>,
+  pub acronym: Option<String>,
+  pub score: Option<BigDecimal>,
+  pub color: Option<i16>,
+  pub date: Option<OffsetDateTime>,
+  pub accepts_members: Option<bool>,
+  pub flag: Option<String>,
+  pub forum_link: Option<String>,
+  pub discord_link: Option<String>,
+  pub wiki_link: Option<String>,
+  pub estimated_resources: Option<Resources>
 }
