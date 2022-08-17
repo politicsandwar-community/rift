@@ -4,7 +4,6 @@ use time::OffsetDateTime;
 
 #[derive(Clone, Model)]
 #[table = "cities"]
-#[primary_key = "id"]
 pub struct City {
     pub id: i32,
     pub nation_id: i32,
