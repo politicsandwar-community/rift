@@ -1,14 +1,13 @@
 use bigdecimal::BigDecimal;
 use model_derive::Model;
-use uuid::Uuid;
 use time::OffsetDateTime;
 
-use crate::structs::resources;
+use crate::structs::resources::Resources;
 
 #[derive(Clone, Model)]
-#[table = "users"]
+#[table = "nations"]
 #[primary_key = "id"]
-pub struct nation {
+pub struct Nation {
   pub id:i32,
   pub alliance_id:i32,
   pub alliance_position:i16,
@@ -40,5 +39,5 @@ pub struct nation {
   pub wars_lost: i32,
   pub tax_id: i32,
   pub alliance_seniority: Option<i32>, //Null for no alliance? or zero
-  pub estimated_resources: Option<resources>
+  pub estimated_resources: Option<Resources>
 }
