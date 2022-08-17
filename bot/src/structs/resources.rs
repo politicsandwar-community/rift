@@ -2,16 +2,16 @@ use bigdecimal::BigDecimal;
 
 #[derive (Clone)]
 pub struct Resources {
-    pub money: Option<BigDecimal>,
-    pub coal: Option<BigDecimal>,
-    pub oil: Option<BigDecimal>,
-    pub uranium: Option<BigDecimal>,
-    pub iron: Option<BigDecimal>,
-    pub bauxite: Option<BigDecimal>,
-    pub lead: Option<BigDecimal>,
-    pub gasoline: Option<BigDecimal>,
-    pub munitions: Option<BigDecimal>,
-    pub steel: Option<BigDecimal>,
-    pub aluminum: Option<BigDecimal>,
-    pub food: Option<BigDecimal>
+    pub money: BigDecimal,
+    pub coal: BigDecimal,
+    pub oil: BigDecimal,
+    pub uranium: BigDecimal,
+    pub iron: BigDecimal,
+    pub bauxite: BigDecimal,
+    pub lead: BigDecimal,
+    pub gasoline: BigDecimal,
+    pub munitions: BigDecimal,
+    pub steel: BigDecimal,
+    pub aluminum: BigDecimal,
+    pub food: BigDecimal
 }
