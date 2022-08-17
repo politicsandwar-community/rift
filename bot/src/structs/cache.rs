@@ -8,7 +8,8 @@ pub struct Cache {
 #[allow(dead_code)]
 impl Cache {
     pub async fn hydrate(pool: &Pool<Postgres>) -> Self {
-        let users_data = sqlx::query_as!(super::User, "SELECT * FROM users;")
+        let users_data = sqlx::   
+        query_as!(super::User, "SELECT * FROM users;")
             .fetch_all(pool)
             .await
             .unwrap();
