@@ -10,7 +10,7 @@ impl Cache {
     pub async fn hydrate(pool: &Pool<Postgres>) -> Self {
         let users_data = sqlx::query_as!(super::User, "SELECT * FROM users;")
             .fetch_all(pool)
-            .await  
+            .await
             .unwrap();
         let users = DashMap::with_capacity(users_data.len());
         for user in users_data {

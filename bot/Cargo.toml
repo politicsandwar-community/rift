@@ -9,7 +9,7 @@ poise = "0.3.0"
 dotenv = "0.15.0"
 async-trait = "0.1.57"
 model_derive = {path = "model_derive"}
-sqlx = { version = "0.6.1", features = ["runtime-tokio-rustls", "postgres", "bigdecimal", "uuid","time"] }
+sqlx = { version = "0.6.1", features = ["runtime-tokio-rustls", "postgres", "bigdecimal", "uuid", "time"] }
 uuid = "1.1.2"
 bigdecimal = "0.3.0"
 dashmap = { version = "5.3.4" }

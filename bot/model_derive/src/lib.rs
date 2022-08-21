@@ -1,7 +1,8 @@
 use proc_macro::TokenStream;
 use quote::quote;
+use syn::Expr;
 
-#[proc_macro_derive(Model, attributes(table, no_save, primary_key))]
+#[proc_macro_derive(Model, attributes(table, no_save, primary_key, no_type_check))]
 pub fn model_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
     impl_model_derive(&ast)
@@ -45,35 +46,59 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .split(',')
         .map(|s| s.trim().to_string())
         .collect();
+    let mut no_type_check_columns: Vec<String> = vec![];
     let columns: Vec<String> = data
         .fields
         .iter()
         .filter(|field| !field.attrs.iter().any(|attr| attr.path.is_ident("no_save")))
         .map(|field| {
-            field
+            let no_type_check = field
+                .attrs
+                .iter()
+                .any(|attr| attr.path.is_ident("no_type_check"));
+            let column = field
                 .ident
                 .as_ref()
                 .expect("fields must have an identifier")
-                .to_string()
+                .to_string();
+            if no_type_check {
+                no_type_check_columns.push(column.clone());
+            }
+            column
         })
         .collect();
     let insert_names = columns.join(", ");
     let insert_values: Vec<String> = (0..columns.len()).map(|i| format!("${}", i + 1)).collect();
     let insert_values = insert_values.join(", ");
-    let insert_statement = format!(
-        "INSERT INTO {} ({}) VALUES ({}) RETURNING *;",
-        table, insert_names, insert_values,
-    );
-    let update_statement = format!(
-        "UPDATE {} SET {} WHERE {};",
-        table,
-        Iterator::enumerate(columns.iter())
-            .map(|(i, column)| format!("{} = ${}", column, i + 1))
-            .collect::<Vec<String>>()
-            .join(", "),
-        primary_keys
-            .iter()
-            .map(|key| format!(
+    let returning_names = columns
+        .iter()
+        .map(|c| {
+            if no_type_check_columns.contains(c) {
+                format!(r#"{c} as "{c}: _""#)
+            } else {
+                c.to_owned()
+            }
+        })
+        .collect::<Vec<String>>()
+        .join(", ");
+    let insert_statement: Expr = syn::parse_str(
+        format!(
+            "r#\"{}\"#",
+            format_args!(
+                "INSERT INTO {table} ({insert_names}) VALUES ({insert_values}) RETURNING {returning_names};"
+            )
+        )
+        .as_str(),
+    )
+    .unwrap();
+    let update_names = Iterator::enumerate(columns.iter())
+        .map(|(i, column)| format!("{} = ${}", column, i + 1))
+        .collect::<Vec<String>>()
+        .join(", ");
+    let update_where = primary_keys
+        .iter()
+        .map(|key| {
+            format!(
                 "{} = ${}",
                 key,
                 columns
@@ -81,33 +106,63 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                     .position(|c| c == key)
                     .unwrap_or_else(|| panic!("primary key {} not present in struct", key))
                     + 1
-            ))
-            .collect::<Vec<String>>()
-            .join(" AND ")
-    );
+            )
+        })
+        .collect::<Vec<String>>()
+        .join(" AND ");
+    let update_statement = format!("UPDATE {table} SET {update_names} WHERE {update_where};");
     let struct_values = columns
         .iter()
         .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
         .collect::<Vec<syn::Expr>>();
-    let gen = quote! {
-        #[async_trait::async_trait]
-        impl crate::traits::Model for #name {
-            const TABLE: &'static str = #table;
+    let gen = if ast
+        .attrs
+        .iter()
+        .any(|attr| attr.path.is_ident("no_type_check"))
+    {
+        quote! {
+            #[async_trait::async_trait]
+            impl crate::traits::Model for #name {
+                const TABLE: &'static str = #table;
 
-            async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
-                if (insert) {
-                    let result = sqlx::query_as!(Self, #insert_statement, #(#struct_values),*)
-                        .fetch_one(&data.pool)
-                        .await?;
-                    self.clone_from(&result);
-                } else {
-                    sqlx::query_as!(Self, #update_statement, #(#struct_values),*)
-                        .fetch_one(&data.pool)
-                        .await?;
+                async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
+                    if (insert) {
+                        let result = sqlx::query_as_unchecked!(Self, #insert_statement, #(#struct_values),*)
+                            .fetch_one(&data.pool)
+                            .await?;
+                        self.clone_from(&result);
+                    } else {
+                        sqlx::query_as_unchecked!(Self, #update_statement, #(#struct_values),*)
+                            .fetch_one(&data.pool)
+                            .await?;
+                    }
+                    Ok(())
                 }
-                Ok(())
             }
         }
+    } else {
+        quote! {
+                #[async_trait::async_trait]
+                impl crate::traits::Model for #name {
+                    const TABLE: &'static str = #table;
+
+                    async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
+                        if (insert) {
+                            let result = sqlx::query_as!(Self, #insert_statement, #(#struct_values),*)
+                                .fetch_one(&data.pool)
+                                .await?;
+                            self.clone_from(&result);
+                        } else {
+                            sqlx::query_as!(Self, #update_statement, #(#struct_values),*)
+                                .fetch_one(&data.pool)
+                                .await?;
+                        }
+                        Ok(())
+                    }
+                }
+
+        }
     };
+
     gen.into()
 }

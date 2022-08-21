@@ -14,5 +14,5 @@ pub struct Resources {
     pub munitions: BigDecimal,
     pub steel: BigDecimal,
     pub aluminum: BigDecimal,
-    pub food: BigDecimal
+    pub food: BigDecimal,
 }
