@@ -115,32 +115,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .iter()
         .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
         .collect::<Vec<syn::Expr>>();
-    let gen = if ast
-        .attrs
-        .iter()
-        .any(|attr| attr.path.is_ident("no_type_check"))
-    {
-        quote! {
-            #[async_trait::async_trait]
-            impl crate::traits::Model for #name {
-                const TABLE: &'static str = #table;
-
-                async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
-                    if (insert) {
-                        let result = sqlx::query_as_unchecked!(Self, #insert_statement, #(#struct_values),*)
-                            .fetch_one(&data.pool)
-                            .await?;
-                        self.clone_from(&result);
-                    } else {
-                        sqlx::query_as_unchecked!(Self, #update_statement, #(#struct_values),*)
-                            .fetch_one(&data.pool)
-                            .await?;
-                    }
-                    Ok(())
-                }
-            }
-        }
-    } else {
+    let gen = if no_type_check_columns.is_empty() {
         quote! {
                 #[async_trait::async_trait]
                 impl crate::traits::Model for #name {
@@ -162,7 +137,27 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 }
 
         }
-    };
+    } else {
+        quote! {
+            #[async_trait::async_trait]
+            impl crate::traits::Model for #name {
+                const TABLE: &'static str = #table;
 
+                async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
+                    if (insert) {
+                        let result = sqlx::query_as_unchecked!(Self, #insert_statement, #(#struct_values),*)
+                            .fetch_one(&data.pool)
+                            .await?;
+                        self.clone_from(&result);
+                    } else {
+                        sqlx::query_as_unchecked!(Self, #update_statement, #(#struct_values),*)
+                            .fetch_one(&data.pool)
+                            .await?;
+                    }
+                    Ok(())
+                }
+            }
+        }
+    };
     gen.into()
 }

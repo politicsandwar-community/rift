@@ -6,7 +6,6 @@ use crate::structs::resources::Resources;
 
 #[derive(Clone, Model)]
 #[table = "alliances"]
-#[no_type_check]
 pub struct Alliance {
     pub id: Option<i32>,
     pub name: Option<String>,

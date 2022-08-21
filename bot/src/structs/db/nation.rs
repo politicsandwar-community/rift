@@ -6,7 +6,6 @@ use crate::structs::resources::Resources;
 
 #[derive(Clone, Model)]
 #[table = "nations"]
-#[no_type_check]
 pub struct Nation {
     pub id: i32,
     pub alliance_id: i32,
@@ -38,6 +37,7 @@ pub struct Nation {
     pub wars_won: i32,
     pub wars_lost: i32,
     pub tax_id: i32,
-    pub alliance_seniority: Option<i32>, //Null for no alliance? or zero
+    pub alliance_seniority: Option<i32>, //Null for no alliance? or zero\
+    #[no_type_check]
     pub estimated_resources: Resources,
 }
