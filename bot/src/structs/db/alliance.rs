@@ -7,13 +7,13 @@ use crate::structs::resources::Resources;
 #[derive(Clone, Model)]
 #[table = "alliances"]
 pub struct Alliance {
-    pub id: Option<i32>,
-    pub name: Option<String>,
+    pub id: i32,
+    pub name: String,
     pub acronym: Option<String>,
-    pub score: Option<BigDecimal>,
-    pub color: Option<i16>,
-    pub date: Option<OffsetDateTime>,
-    pub accepts_members: Option<bool>,
+    pub score: BigDecimal,
+    pub color: i16,
+    pub date: OffsetDateTime,
+    pub accepts_members: bool,
     pub flag: Option<String>,
     pub forum_link: Option<String>,
     pub discord_link: Option<String>,
