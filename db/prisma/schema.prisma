@@ -1,0 +1,935 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model users {
+  user_id   BigInt?
+  nation_id BigInt?
+  uuid      String? @db.Uuid
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model accounts {
+  id           Int                       @default(autoincrement())
+  name         String?
+  owner_id     BigInt?
+  alliance_id  Int?
+  resources    Unsupported("resources")?
+  war_chest    Boolean?
+  primary      Boolean?
+  deposit_code String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model alliance_auto_roles {
+  id           Int     @default(autoincrement())
+  role_id      BigInt?
+  guild_id     BigInt?
+  alliance_id  Int?
+  access_level Int?    @db.SmallInt
+  condition    String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model alliance_settings {
+  alliance_id                       Int?
+  default_raid_condition            String?
+  default_nuke_condition            String?
+  default_military_condition        String?
+  default_attack_raid_condition     String?
+  default_attack_nuke_condition     String?
+  default_attack_military_condition String?
+  withdraw_channel_ids              BigInt[]
+  require_withdraw_approval         Boolean?
+  offshore_id                       Int?
+  withdraw_from_offshore            Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model alliances {
+  id                  Int
+  name                String
+  acronym             String?
+  score               Decimal                   @db.Decimal
+  color               Int                       @db.SmallInt
+  date                DateTime                  @db.Timestamptz(6)
+  accepts_members     Boolean
+  flag                String?
+  forum_link          String?
+  discord_link        String?
+  wiki_link           String?
+  estimated_resources Unsupported("resources")?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model alliances_private {
+  id        Int?
+  resources Unsupported("resources")?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model audit_checks {
+  id                     Int      @default(autoincrement())
+  name                   String?
+  config_id              Int?
+  condition              String?
+  fail_message_format    String?
+  success_message_format String?
+  required               Boolean?
+  city                   Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model audit_configs {
+  id                     Int     @default(autoincrement())
+  name                   String?
+  alliance_id            Int?
+  fail_message_format    String?
+  success_message_format String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model audit_log_configs {
+  id                 Int     @default(autoincrement())
+  guild_id           BigInt?
+  channel_id         BigInt?
+  target_guild_id    BigInt?
+  target_alliance_id Int?
+  actions            Int[]   @db.SmallInt
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model audit_logs {
+  id          Int     @default(autoincrement())
+  config_id   Int?
+  guild_id    BigInt?
+  channel_id  BigInt?
+  user_id     BigInt?
+  alliance_id Int?
+  action      Int?    @db.SmallInt
+  data        Json?   @db.Json
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model audit_runs {
+  id        Int   @default(autoincrement())
+  config_id Int?
+  nation_id Int?
+  checks    Json? @db.Json
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model bankrecs {
+  id            Int?
+  date          DateTime?                 @db.Timestamptz(6)
+  sender_id     Int?
+  sender_type   Int?                      @db.SmallInt
+  receiver_id   Int?
+  receiver_type Int?                      @db.SmallInt
+  banker_id     Int?
+  note          String?
+  resources     Unsupported("resources")?
+  tax_id        Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model blitz_targets {
+  id           Int   @default(autoincrement())
+  blitz_id     Int?
+  war_room_id  Int?
+  nation_id    Int?
+  attacker_ids Int[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model blitzes {
+  id                    Int       @default(autoincrement())
+  date                  DateTime? @db.Timestamptz(6)
+  name                  String?
+  message               String?
+  alliance_ids          Int[]
+  planning_alliance_ids Int[]
+  war_room_config       Int?
+  direct_message        Boolean?
+  in_game_message       Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model bounties {
+  id        Int?
+  date      DateTime? @db.Timestamptz(6)
+  nation_id Int?
+  amount    Int?
+  type      Int?      @db.SmallInt
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model builds {
+  id                  Int      @default(autoincrement())
+  name                String?
+  owner_id            BigInt?
+  use_condition       String?
+  infrastructure      Decimal? @db.Decimal
+  land                Decimal? @db.Decimal
+  coal_power          Int?
+  oil_power           Int?
+  nuclear_power       Int?
+  wind_power          Int?
+  coal_mines          Int?
+  lead_mines          Int?
+  bauxite_mine        Int?
+  oil_well            Int?
+  uranium_mine        Int?
+  iron_mines          Int?
+  farms               Int?
+  oil_refineries      Int?
+  steel_mills         Int?
+  aluminum_refineries Int?
+  munitions_factories Int?
+  police_stations     Int?
+  hospitals           Int?
+  recycling_center    Int?
+  subways             Int?
+  supermarkets        Int?
+  banks               Int?
+  shopping_malls      Int?
+  stadiums            Int?
+  barracks            Int?
+  factories           Int?
+  hangars             Int?
+  drydocks            Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model cities {
+  id                  Int
+  nation_id           Int
+  name                String
+  date                DateTime  @db.Timestamptz(6)
+  infrastructure      Decimal   @db.Decimal
+  land                Decimal   @db.Decimal
+  powered             Boolean
+  coal_power          Int
+  oil_power           Int
+  nuclear_power       Int
+  wind_power          Int
+  coal_mines          Int
+  lead_mines          Int
+  bauxite_mine        Int
+  oil_well            Int
+  uranium_mine        Int
+  iron_mines          Int
+  farms               Int
+  oil_refineries      Int
+  steel_mills         Int
+  aluminum_refineries Int
+  munitions_factories Int
+  police_stations     Int
+  hospitals           Int
+  recycling_center    Int
+  subways             Int
+  supermarkets        Int
+  banks               Int
+  shopping_malls      Int
+  stadiums            Int
+  barracks            Int
+  factories           Int
+  hangars             Int
+  drydocks            Int
+  nuke_date           DateTime? @db.Timestamptz(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model city_auto_roles {
+  id           Int      @default(autoincrement())
+  role_id      BigInt?
+  guild_id     BigInt?
+  min_city     Int?
+  max_city     Int?
+  members_only Boolean?
+  condition    String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model colors {
+  date DateTime? @db.Timestamptz(6)
+  data String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model conditional_auto_roles {
+  id        Int     @default(autoincrement())
+  role_id   BigInt?
+  guild_id  BigInt?
+  condition String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model conditions {
+  id            Int     @default(autoincrement())
+  name          String?
+  owner_id      BigInt?
+  value         String?
+  use_condition String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model credentials {
+  nation_id Int?
+  api_key   String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model embassies {
+  id          Int      @default(autoincrement())
+  config_id   Int?
+  guild_id    BigInt?
+  channel_id  BigInt?
+  alliance_id BigInt?
+  archived    Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model embassy_configs {
+  id                  Int      @default(autoincrement())
+  name                String?
+  category_id         BigInt?
+  guild_id            BigInt?
+  message             String?
+  archive_category_id BigInt?
+  mentions            Int[]
+  default             Boolean?
+  name_format         String?
+  access_level        Int?     @db.SmallInt
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model grants {
+  id          Int                       @default(autoincrement())
+  date        DateTime?                 @db.Timestamptz(6)
+  status      Int?                      @db.SmallInt
+  recipient   BigInt?
+  resources   Unsupported("resources")?
+  alliance_id Int?
+  note        String?
+  payoff_type Int?                      @db.SmallInt
+  deadline    DateTime?                 @db.Timestamptz(6)
+  expiry      DateTime?                 @db.Timestamptz(6)
+  paid        Unsupported("resources")?
+  payoff_code String?
+  tax_bracket Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model guild_roles {
+  id          BigInt?
+  guild_id    BigInt?
+  permissions BigInt?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model guild_settings {
+  guild_id                  BigInt?
+  purpose                   Int?     @db.SmallInt
+  purpose_argument          String?
+  public                    Boolean?
+  description               String?
+  welcome_message           String?
+  welcome_channels          BigInt[]
+  join_role_ids             BigInt[]
+  verified_role_ids         BigInt[]
+  member_role_ids           BigInt[]
+  verified_nickname_format  String?
+  enforce_verified_nickname Boolean?
+  welcome_mentions          Int[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model inactive_alerts {
+  nation_id  Int?
+  last_alert DateTime? @db.Timestamptz(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model interview_answers {
+  id           Int     @default(autoincrement())
+  question_id  Int?
+  interview_id Int?
+  answer       String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model interview_configs {
+  id       Int     @default(autoincrement())
+  name     String?
+  guild_id BigInt?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model interview_questions {
+  id          Int      @default(autoincrement())
+  name        String?
+  config_id   Int?
+  question    String?
+  position    Int?
+  answer_type Int?     @db.SmallInt
+  choices     String[]
+  min_choices Int?
+  max_choices Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model interviews {
+  id           Int      @default(autoincrement())
+  config_id    Int?
+  owner_id     BigInt?
+  ticket_id    Int?
+  require_link Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mentions {
+  id          Int      @default(autoincrement())
+  owner_id    BigInt?
+  owner_type  Int?     @db.SmallInt
+  channel_ids BigInt[]
+  role_ids    BigInt[]
+  user_ids    BigInt[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model menu_interfaces {
+  id         Int     @default(autoincrement())
+  menu_id    Int?
+  message_id BigInt?
+  channel_id BigInt?
+  guild_id   BigInt?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model menu_items {
+  id             Int      @default(autoincrement())
+  menu_id        Int?
+  type           Int?     @db.SmallInt
+  style          Int?     @db.SmallInt
+  label          String?
+  disabled       Boolean?
+  url            String?
+  emoji          BigInt?
+  action         Int?     @db.SmallInt
+  action_options Int[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model menus {
+  id          Int     @default(autoincrement())
+  guild_id    BigInt?
+  name        String?
+  description String?
+  layout      Int[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model nations {
+  id                       Int
+  alliance_id              Int
+  alliance_position        Int                       @db.SmallInt
+  name                     String
+  leader                   String
+  continent                Int                       @db.SmallInt
+  war_policy               Int                       @db.SmallInt
+  domestic_policy          Int                       @db.SmallInt
+  color                    Int                       @db.SmallInt
+  num_cities               Int
+  score                    Decimal                   @db.Decimal
+  flag                     String
+  vacation_mode_turns      Int
+  beige_turns              Int
+  espionage_available      Boolean
+  last_active              DateTime                  @db.Timestamptz(6)
+  date                     DateTime                  @db.Timestamptz(6)
+  soldiers                 Int
+  tanks                    Int
+  aircraft                 Int
+  ships                    Int
+  missiles                 Int
+  nukes                    Int
+  discord_username         String?
+  turns_since_last_city    Int
+  turns_since_last_project Int
+  projects                 Int
+  wars_won                 Int
+  wars_lost                Int
+  tax_id                   Int
+  alliance_seniority       Int?
+  estimated_resources      Unsupported("resources")?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model nations_private {
+  id        Int?
+  update_tz Decimal?                  @db.Decimal
+  spies     Int?
+  resources Unsupported("resources")?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model radiation {
+  date DateTime? @db.Timestamptz(6)
+  data String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model reminders {
+  id             Int                      @default(autoincrement())
+  name           String?
+  message        String?
+  owner_id       BigInt?
+  mention_ids    Int[]
+  direct_message Boolean?
+  date           DateTime?                @db.Timestamptz(6)
+  interval       Unsupported("interval")?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model roles {
+  id                 Int      @default(autoincrement())
+  name               String?
+  description        String?
+  alliance_id        Int?
+  rank               Int?
+  permissions        BigInt?
+  member_ids         BigInt[]
+  role_ids           BigInt[]
+  alliance_positions Int[]
+  privacy_level      Int?
+  access_level       Int?     @db.SmallInt
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model rosters {
+  id          Int       @default(autoincrement())
+  nation_id   Int?
+  alliance_id Int?
+  join_date   DateTime? @db.Timestamptz(6)
+  time_zone   Decimal?  @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model server_submissions {
+  id          Int      @default(autoincrement())
+  name        String?
+  invite      String?
+  description String?
+  tags        String[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model servers {
+  id          Int      @default(autoincrement())
+  guild_id    BigInt?
+  name        String?
+  invite      String?
+  description String?
+  tags        String[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model subscriptions {
+  id         Int      @default(autoincrement())
+  guild_id   BigInt?
+  channel_id BigInt?
+  owner_id   BigInt?
+  event      String?
+  sub_types  String[]
+  condition  String?
+  mentions   Int[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tags {
+  id            Int     @default(autoincrement())
+  name          String?
+  owner_id      BigInt?
+  text          String?
+  use_condition String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model target_configs {
+  id            Int      @default(autoincrement())
+  owner_id      BigInt?
+  name          String?
+  count         BigInt?
+  rater         Int?
+  condition     String?
+  use_condition String?
+  attack        Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model target_raters {
+  id             Int     @default(autoincrement())
+  cities         String?
+  infrastructure String?
+  activity       String?
+  soldiers       String?
+  tanks          String?
+  aircraft       String?
+  ships          String?
+  missiles       String?
+  nukes          String?
+  money          String?
+  coal           String?
+  oil            String?
+  uranium        String?
+  iron           String?
+  bauxite        String?
+  lead           String?
+  gasoline       String?
+  munitions      String?
+  steel          String?
+  aluminum       String?
+  food           String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model target_reminders {
+  id             Int      @default(autoincrement())
+  nation_id      Int?
+  owner_id       BigInt?
+  mention_ids    Int[]
+  direct_message Boolean?
+  times          Int[]
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tax_brackets {
+  id                Int?
+  alliance_id       Int?
+  name              String?
+  date              DateTime? @db.Timestamptz(6)
+  date_modified     DateTime? @db.Timestamptz(6)
+  last_modifier_id  Int?
+  tax_rate          Int?
+  resource_tax_rate Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ticket_configs {
+  id                    Int      @default(autoincrement())
+  name                  String?
+  category_id           BigInt?
+  guild_id              BigInt?
+  message               String?
+  archive_category_id   BigInt?
+  mention_ids           Int[]
+  default               Boolean?
+  name_format           String?
+  interview_config_id   Int?
+  close_action          Int?     @db.SmallInt
+  transcript_channel_id BigInt?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tickets {
+  id            Int      @default(autoincrement())
+  ticket_number Int?
+  config_id     Int?
+  guild_id      BigInt?
+  channel_id    BigInt?
+  owner_id      BigInt?
+  closed        Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model trades {
+  id                Int?
+  type              Int?      @db.SmallInt
+  date              DateTime? @db.Timestamptz(6)
+  sender_id         Int?
+  receiver_id       Int?
+  resource          Int?      @db.SmallInt
+  amount            Int?
+  action            Int?      @db.SmallInt
+  price             Int?
+  accepted          Boolean?
+  date_accepted     DateTime? @db.Timestamptz(6)
+  original_trade_id Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model transactions {
+  id         Int                       @default(autoincrement())
+  date       DateTime?                 @db.Timestamptz(6)
+  status     Int?                      @db.SmallInt
+  type       Int?                      @db.SmallInt
+  creator_id BigInt?
+  to_id      BigInt?
+  to_type    Int?                      @db.SmallInt
+  from_id    BigInt?
+  from_type  Int?                      @db.SmallInt
+  resources  Unsupported("resources")?
+  note       String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model treasures {
+  date DateTime? @db.Timestamptz(6)
+  data String?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model treaties {
+  id          Int?
+  date        DateTime? @db.Timestamptz(6)
+  type        Int?      @db.SmallInt
+  url         String?
+  turns_left  Int?
+  sender_id   Int?
+  receiver_id Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model war_attacks {
+  id                             Int?
+  date                           DateTime? @db.Timestamptz(6)
+  attacker_id                    Int?
+  defender_id                    Int?
+  type                           Int?      @db.SmallInt
+  war_id                         Int?
+  victor_id                      Int?
+  success                        Int?
+  attcas1                        Int?
+  attcas2                        Int?
+  defcas1                        Int?
+  defcas2                        Int?
+  city_id                        Int?
+  infrastructure_destroyed       Decimal?  @db.Decimal
+  improvements_lost              Int?
+  money_stolen                   Decimal?  @db.Decimal
+  loot_info                      String?
+  resistance_eliminated          Int?
+  city_infrastructure_before     Decimal?  @db.Decimal
+  infrastructure_destroyed_value Decimal?  @db.Decimal
+  attacker_munitions_used        Decimal?  @db.Decimal
+  defender_munitions_used        Decimal?  @db.Decimal
+  attacker_gasoline_used         Decimal?  @db.Decimal
+  defender_gasoline_used         Decimal?  @db.Decimal
+  aircraft_killed_by_tanks       Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model war_room_configs {
+  id           Int      @default(autoincrement())
+  name         String?
+  channel_id   BigInt?
+  category_ids BigInt[]
+  guild_id     BigInt?
+  message      String?
+  mention_ids  Int[]
+  name_format  String?
+  reuse        Boolean?
+  condition    String?
+  track_wars   Boolean?
+  advise       Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model war_rooms {
+  id         Int      @default(autoincrement())
+  config_id  Int?
+  guild_id   BigInt?
+  channel_id BigInt?
+  nation_id  Int?
+  war_ids    BigInt[]
+  archived   Boolean?
+  thread     Boolean?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model wars {
+  id                                      Int?
+  date                                    DateTime? @db.Timestamptz(6)
+  reason                                  String?
+  type                                    Int?      @db.SmallInt
+  attacker_id                             Int?
+  attacker_alliance_id                    Int?
+  defender_id                             Int?
+  defender_alliance_id                    Int?
+  ground_control                          Int?
+  air_superiority                         Int?
+  naval_blockade                          Int?
+  winner_id                               Int?
+  turns_left                              Int?
+  attacker_action_points                  Int?
+  defender_action_points                  Int?
+  attacker_resistance                     Int?
+  defender_resistance                     Int?
+  attacker_peace                          Boolean?
+  defender_peace                          Boolean?
+  attacker_fortify                        Boolean?
+  defender_fortify                        Boolean?
+  attacker_gasoline_used                  Decimal?  @db.Decimal
+  defender_gasoline_used                  Decimal?  @db.Decimal
+  attacker_munitions_used                 Decimal?  @db.Decimal
+  defender_munitions_used                 Decimal?  @db.Decimal
+  attacker_aluminum_used                  Decimal?  @db.Decimal
+  defender_aluminum_used                  Decimal?  @db.Decimal
+  attacker_steel_used                     Decimal?  @db.Decimal
+  defender_steel_used                     Decimal?  @db.Decimal
+  attacker_infrastructure_destroyed       Decimal?  @db.Decimal
+  defender_infrastructure_destroyed       Decimal?  @db.Decimal
+  attacker_money_looted                   Decimal?  @db.Decimal
+  defender_money_looted                   Decimal?  @db.Decimal
+  attacker_soldiers_killed                Int?
+  defender_soldiers_killed                Int?
+  attacker_tanks_killed                   Int?
+  defender_tanks_killed                   Int?
+  attacker_aircraft_killed                Int?
+  defender_aircraft_killed                Int?
+  attacker_ships_killed                   Int?
+  defender_ships_killed                   Int?
+  attacker_missiles_used                  Int?
+  defender_missiles_used                  Int?
+  attacker_nukes_used                     Int?
+  defender_nukes_used                     Int?
+  attacker_infrastructure_destroyed_value Decimal?  @db.Decimal
+  defender_infrastructure_destroyed_value Decimal?  @db.Decimal
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model webhooks {
+  id         BigInt?
+  channel_id BigInt?
+  guild_id   BigInt?
+  token      String?
+
+  @@ignore
+}
