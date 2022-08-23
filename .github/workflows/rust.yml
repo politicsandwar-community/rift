@@ -24,5 +24,6 @@ jobs:
       - run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
+          docker-compose up -d db
           cargo clippy
           cargo fmt
