@@ -39,5 +39,5 @@ pub struct Nation {
     pub tax_id: i32,
     pub alliance_seniority: Option<i32>, //Null for no alliance? or zero\
     #[no_type_check]
-    pub estimated_resources: Resources,
+    pub estimated_resources: Option<Resources>,
 }

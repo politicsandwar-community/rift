@@ -19,5 +19,5 @@ pub struct Alliance {
     pub discord_link: Option<String>,
     pub wiki_link: Option<String>,
     #[no_type_check]
-    pub estimated_resources: Resources,
+    pub estimated_resources: Option<Resources>,
 }
