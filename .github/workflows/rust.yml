@@ -15,6 +15,8 @@ jobs:
 
     env:
       CARGO_TERM_COLOR: always
+      DATABASE_URL: postgres://postgres:password@localhost:5432/postgres?schema=public
+      POSTGRES_PASSWORD: password
 
     steps:
       - uses: actions/checkout@v3
@@ -24,5 +26,6 @@ jobs:
       - run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
+          docker-compose up -d db
           cargo clippy
           cargo fmt
