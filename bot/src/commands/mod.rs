@@ -8,5 +8,6 @@ pub fn commands() -> Vec<Command> {
     main::commands()
         .into_iter()
         .chain(help::commands())
+        .chain(who::commands())
         .collect()
 }

@@ -9,7 +9,14 @@ async fn who(
     #[description = "Selected user"] user: Option<serenity::User>,
 ) -> Result<(), Error> {
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let response = format!("your name is {}", u.name);
+    let gotten_user = ctx
+        .data()
+        .cache
+        .get_user(&i64::try_from(u.id.0).expect("userid to big? ughhh"));
+    let response = format!(
+        "test {}",
+        gotten_user.expect("dumb limi").nation_id.expect("dumb")
+    );
     ctx.say(response).await?;
     Ok(())
 }
