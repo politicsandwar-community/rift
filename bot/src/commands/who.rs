@@ -10,13 +10,11 @@ async fn who(
 ) -> Result<(), Error> {
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
     let gotten_user = ctx.data().cache.get_user(&i64::try_from(u.id.0).unwrap());
-    let response = format!(
-        "test {}",
-        gotten_user
-            .unwrap_or("No User Found")
-            .nation_id
-            .unwrap_or(0)
-    );
+    let mut response = "";
+    match gotten_user {
+        Some(user) => response = "test",
+        None => response = "untest",
+    }
     ctx.say(response).await?;
     Ok(())
 }
