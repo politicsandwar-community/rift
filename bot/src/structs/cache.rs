@@ -24,8 +24,10 @@ impl Cache {
         self.users.insert(user.user_id.unwrap(), user);
     }
 
-    pub fn get_user(&self, id: &i64) -> Option<super::User> {
-        self.users.get(id).map(|i| i.clone())
+    pub fn get_user(&self, id: u64) -> Option<super::User> {
+        self.users
+            .get(&i64::try_from(id).unwrap())
+            .map(|i| i.clone())
     }
 
     pub fn remove_user(&mut self, id: i64) {

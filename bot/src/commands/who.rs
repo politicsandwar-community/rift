@@ -9,13 +9,22 @@ async fn who(
     #[description = "Selected user"] user: Option<serenity::User>,
 ) -> Result<(), Error> {
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let gotten_user = ctx.data().cache.get_user(&i64::try_from(u.id.0).unwrap());
-    let mut response = "";
+    let gotten_user = ctx.data().cache.get_user(u.id.0);
+
     match gotten_user {
-        Some(user) => response = "test",
-        None => response = "untest",
+        Some(user) => {
+            ctx.say(format!(
+                "We found a user! {}",
+                user.user_id.expect("Not working xd")
+            ))
+            .await?;
+        },
+        None => {
+            ctx.say(format!("We Couldnt find a user with! {}", u.id.0))
+                .await?;
+        },
     }
-    ctx.say(response).await?;
+
     Ok(())
 }
 
