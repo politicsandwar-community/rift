@@ -13,12 +13,12 @@ async fn who(
 
     match gotten_user {
         Some(user) => {
-            let n = ctx
-                .data()
-                .cache
-                .get_nation(i32::try_from(user.nation_id.unwrap())?)
-                .unwrap();
-            ctx.say(format!("We found the nation {} under that user", n.name))
+            // let n = ctx
+            //     .data()
+            //     .cache
+            //     .get_nation(i32::try_from(user.nation_id.unwrap())?)
+            //     .expect("It failed lol");
+            ctx.send(|f| f.embed(crate::embeds::pnw::nation(&ctx)))
                 .await?;
         },
         None => {
