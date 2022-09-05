@@ -3,6 +3,7 @@ use sqlx::{Pool, Postgres};
 
 pub struct Cache {
     users: DashMap<i64, super::User>,
+    nations: DashMap<i32, super::Nation>,
 }
 
 #[allow(dead_code)]
@@ -17,7 +18,16 @@ impl Cache {
             users.insert(user.user_id.unwrap(), user);
         }
 
-        Self { users }
+        let nations_data = sqlx::query_as_unchecked!(super::Nation, "SELECT * FROM nations;")
+            .fetch_all(pool)
+            .await
+            .unwrap();
+        let nations = DashMap::with_capacity(nations_data.len());
+        for nation in nations_data {
+            nations.insert(nation.id, nation);
+        }
+
+        Self { nations, users }
     }
 
     pub fn insert_user(&mut self, user: super::User) {
@@ -32,5 +42,9 @@ impl Cache {
 
     pub fn remove_user(&mut self, id: i64) {
         self.users.remove(&id);
+    }
+
+    pub fn get_nation(&self, id: i32) -> Option<super::Nation> {
+        self.nations.get(&id).map(|i| i.clone())
     }
 }

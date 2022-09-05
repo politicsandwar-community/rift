@@ -13,11 +13,13 @@ async fn who(
 
     match gotten_user {
         Some(user) => {
-            ctx.say(format!(
-                "We found a user! {}",
-                user.user_id.expect("Not working xd")
-            ))
-            .await?;
+            let n = ctx
+                .data()
+                .cache
+                .get_nation(i32::try_from(user.nation_id.unwrap())?)
+                .unwrap();
+            ctx.say(format!("We found the nation {} under that user", n.name))
+                .await?;
         },
         None => {
             ctx.say(format!("We Couldnt find a user with! {}", u.id.0))
