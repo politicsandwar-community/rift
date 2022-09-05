@@ -6,10 +6,3 @@ pub fn embed_author(
 ) -> Box<dyn FnOnce(&mut CreateEmbedAuthor) -> &mut CreateEmbedAuthor> {
     Box::new(move |a: &mut CreateEmbedAuthor| a.name(name).icon_url(icon_url))
 }
-
-pub fn embed_field(
-    name: String,
-    value: String,
-) -> Box<dyn FnOnce(&mut EmbedField) -> &mut EmbedField> {
-    Box::new(move |a: &mut EmbedField| a.inline(true).name(name).value(value))
-}

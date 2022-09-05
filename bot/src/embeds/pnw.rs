@@ -14,6 +14,27 @@ pub fn nation<'a>(ctx: &'a Context) -> Box<dyn Fn(&mut CreateEmbed) -> &mut Crea
             },
         ))
         .colour(consts::embed::INFO_EMBED_COLOUR)
-        .fields(EmbedField::from("test", "test"))
+        .fields([
+            ("Nation ID", "test", true),
+            ("Name", "test", true),
+            ("Leader", "test", true),
+            ("War Policy", "test", true),
+            ("Domestic Policy", "test", true),
+            ("Continent", "test", true),
+            ("Colour", "test", true),
+            ("Alliance", "test", true),
+            ("Alliance Position", "test", true),
+            ("Cities", "test", true),
+            ("Score", "test", true),
+            ("Vacation Mode", "test", true),
+            ("Soldiers", "test", true),
+            ("Tanks", "test", true),
+            ("Aircraft", "test", true),
+            ("Ships", "test", true),
+            ("Missiles", "test", true),
+            ("Nukes", "test", true),
+            ("Average Infrastructure", "test", true),
+            ("Average Land", "test", true),
+        ])
     })
 }
