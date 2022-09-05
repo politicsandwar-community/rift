@@ -1,7 +1,15 @@
+mod checks;
 mod commands;
+mod components;
+mod consts;
+mod embeds;
+mod enums;
+mod errors;
+mod strings;
 mod structs;
 mod traits;
 mod types;
+mod utils;
 
 use poise::serenity_prelude as serenity;
 
