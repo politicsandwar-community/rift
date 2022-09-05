@@ -1,3 +1,3 @@
 use serenity::utils::Colour;
 
-const INFO_EMBED_COLOUR: Colour = Colour::BLUE;
+pub const INFO_EMBED_COLOUR: Colour = Colour::BLUE;
