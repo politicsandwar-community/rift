@@ -1,18 +1,19 @@
-use poise::serenity_prelude::{CreateEmbed, Interaction};
+use poise::serenity_prelude::{CreateEmbed, EmbedField};
 
-use crate::{
-    consts,
-    structs::{Nation, User},
-    types::Context,
-};
+use crate::{consts, structs::Nation, types::Context};
 
-pub fn nation(ctx: &Context) -> Box<dyn Fn(&mut CreateEmbed) -> &mut CreateEmbed> {
+pub fn nation<'a>(ctx: &'a Context) -> Box<dyn Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a> {
     let user = ctx.author();
-    Box::new(|e: &mut CreateEmbed| {
+    Box::new(move |e: &mut CreateEmbed| {
         e.author(crate::utils::embed_author(
-            " test",
-            "https://upload.wikimedia.org/wikipedia/commons/3/3e/Flag_of_New_Zealand.svg",
+            user.name.clone(),
+            if let Some(url) = user.avatar_url() {
+                url
+            } else {
+                user.default_avatar_url()
+            },
         ))
         .colour(consts::embed::INFO_EMBED_COLOUR)
+        .fields(EmbedField::from("test", "test"))
     })
 }
