@@ -2,7 +2,10 @@ use poise::serenity_prelude::{CreateEmbed, EmbedField};
 
 use crate::{consts, structs::Nation, types::Context};
 
-pub fn nation<'a>(ctx: &'a Context) -> Box<dyn Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a> {
+pub fn nation<'a>(
+    ctx: &'a Context,
+    nation: &'a Nation,
+) -> Box<dyn Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a> {
     let user = ctx.author();
     Box::new(move |e: &mut CreateEmbed| {
         e.author(crate::utils::embed_author(

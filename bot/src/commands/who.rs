@@ -1,5 +1,6 @@
 use poise::serenity_prelude as serenity;
 
+use crate::structs::Nation;
 use crate::types::Command;
 use crate::types::{Context, Error};
 
@@ -13,16 +14,26 @@ async fn who(
 
     match gotten_user {
         Some(user) => {
-            // let n = ctx
-            //     .data()
-            //     .cache
-            //     .get_nation(i32::try_from(user.nation_id.unwrap())?)
-            //     .expect("It failed lol");
-            ctx.send(|f| f.embed(crate::embeds::pnw::nation(&ctx)))
-                .await?;
+            let n = ctx
+                .data()
+                .cache
+                .get_nation(i32::try_from(user.nation_id.unwrap())?);
+            match n {
+                Some(n) => {
+                    ctx.send(|f| f.embed(crate::embeds::pnw::nation(&ctx, &n)))
+                        .await?;
+                },
+                None => {
+                    ctx.say(format!(
+                        "We Couldnt find a nation with {}",
+                        user.nation_id.unwrap()
+                    ))
+                    .await?;
+                },
+            }
         },
         None => {
-            ctx.say(format!("We Couldnt find a user with! {}", u.id.0))
+            ctx.say(format!("We Couldnt find a user with {}", u.id.0))
                 .await?;
         },
     }
