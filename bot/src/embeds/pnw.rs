@@ -1,6 +1,7 @@
-use poise::serenity_prelude::{CreateEmbed, EmbedField};
+use num_traits::FromPrimitive;
+use poise::serenity_prelude::CreateEmbed;
 
-use crate::{consts, structs::Nation, types::Context};
+use crate::{consts, enums, structs::Nation, types::Context};
 
 pub fn nation<'a>(
     ctx: &'a Context,
@@ -19,25 +20,77 @@ pub fn nation<'a>(
         .colour(consts::embed::INFO_EMBED_COLOUR)
         .fields([
             ("Nation ID", format!("{}", nation.id), true),
-            ("Name", String::from("test"), true),
-            ("Leader", String::from("test"), true),
-            ("War Policy", String::from("test"), true),
-            ("Domestic Policy", String::from("test"), true),
-            ("Continent", String::from("test"), true),
-            ("Colour", String::from("test"), true),
-            ("Alliance", String::from("test"), true),
-            ("Alliance Position", String::from("test"), true),
-            ("Cities", String::from("test"), true),
-            ("Score", String::from("test"), true),
-            ("Vacation Mode", String::from("test"), true),
-            ("Soldiers", String::from("test"), true),
-            ("Tanks", String::from("test"), true),
-            ("Aircraft", String::from("test"), true),
-            ("Ships", String::from("test"), true),
-            ("Missiles", String::from("test"), true),
-            ("Nukes", String::from("test"), true),
-            ("Average Infrastructure", String::from("test"), true),
-            ("Average Land", String::from("test"), true),
+            ("Name", nation.name.to_string(), true),
+            ("Leader", nation.leader.to_string(), true),
+            ("War Policy", format!("{}", nation.war_policy), true),
+            (
+                "Domestic Policy",
+                format!("{}", nation.domestic_policy),
+                true,
+            ),
+            (
+                "Continent",
+           match FromPrimitive::from_i16(nation.continent){
+            
+           }, 
+                    .as_static()
+                    .to_string(),
+                true,
+            ),
+            ("Colour", format!("{}", nation.color), true),
+            ("Alliance", format!("{}", nation.alliance_id), true),
+            (
+                "Alliance Position",
+                format!("{}", nation.alliance_position),
+                true,
+            ),
+            ("Cities", format!("{}", nation.num_cities), true),
+            ("Score", format!("{}", nation.score), true),
+            (
+                "Vacation Mode",
+                format!("{}", nation.vacation_mode_turns),
+                true,
+            ),
+            (
+                "Soldiers",
+                format!(
+                    "{}/{}",
+                    nation.soldiers,
+                    nation.num_cities * consts::pnw::MAX_SOLDIERS_PER_CITY
+                ),
+                true,
+            ),
+            (
+                "Tanks",
+                format!(
+                    "{}/{}",
+                    nation.tanks,
+                    nation.num_cities * consts::pnw::MAX_TANKS_PER_CITY
+                ),
+                true,
+            ),
+            (
+                "Aircraft",
+                format!(
+                    "{}/{}",
+                    nation.aircraft,
+                    nation.num_cities * consts::pnw::MAX_AIRCRAFT_PER_CITY
+                ),
+                true,
+            ),
+            (
+                "Ships",
+                format!(
+                    "{}/{}",
+                    nation.ships,
+                    nation.num_cities * consts::pnw::MAX_SHIPS_PER_CITY
+                ),
+                true,
+            ),
+            ("Missiles", format!("{}", nation.missiles), true),
+            ("Nukes", format!("{}", nation.nukes), true),
+            ("Average Infrastructure", format!("test"), true),
+            ("Average Land", format!("test"), true),
         ])
     })
 }
