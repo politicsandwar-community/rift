@@ -2,9 +2,9 @@ use poise::serenity_prelude::{CreateEmbed, EmbedField};
 
 use crate::{consts, structs::Nation, types::Context};
 
-pub fn nation<'a>(
+pub fn error<'a>(
     ctx: &'a Context,
-    nation: &'a Nation,
+    message: &'a str,
 ) -> Box<dyn Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a> {
     let user = ctx.author();
     Box::new(move |e: &mut CreateEmbed| {
@@ -17,6 +17,6 @@ pub fn nation<'a>(
             },
         ))
         .colour(consts::embed::ERROR_EMBED_COLOUR)
-        .field("Error", "Not FOund", true)
+        .field("Error", message, true)
     })
 }
