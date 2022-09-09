@@ -1,5 +1,5 @@
 use num_derive::FromPrimitive;
-use strum_macros::AsStaticStr;
+use strum_macros::{AsStaticStr, Display};
 #[derive(AsStaticStr)]
 pub enum AlliancePosition {
     NO_ALLIANCE = 0,
@@ -28,7 +28,7 @@ pub enum Color {
     YELLOW = 14,
     PINK = 15,
 }
-#[derive(AsStaticStr, FromPrimitive)]
+#[derive(AsStaticStr, FromPrimitive, Display)]
 pub enum Continent {
     NORTH_AMERICA = 1,
     SOUTH_AMERICA = 2,
