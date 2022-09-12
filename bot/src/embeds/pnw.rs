@@ -33,7 +33,11 @@ pub fn nation<'a>(
                 format!("{}", nation.domestic_policy),
                 true,
             ),
-            ("Continent", Continent::AUSTRALIA.to_string(), true),
+            (
+                "Continent",
+                consts::enums::CONTINENT.get(usize::from_i16(nation.continent)),
+                true,
+            ),
             ("Colour", format!("{}", nation.color), true),
             ("Alliance", format!("{}", nation.alliance_id), true),
             (
