@@ -1,12 +1,6 @@
-use num_traits::FromPrimitive;
 use poise::serenity_prelude::CreateEmbed;
 
-use crate::{
-    consts,
-    enums::{self, pnw::Continent},
-    structs::Nation,
-    types::Context,
-};
+use crate::{consts, enums::pnw::Continent, structs::Nation, types::Context};
 
 pub fn nation<'a>(
     ctx: &'a Context,
@@ -33,11 +27,7 @@ pub fn nation<'a>(
                 format!("{}", nation.domestic_policy),
                 true,
             ),
-            (
-                "Continent",
-                consts::enums::CONTINENT.get(usize::from_i16(nation.continent)),
-                true,
-            ),
+            ("Continent", "test".to_string(), true),
             ("Colour", format!("{}", nation.color), true),
             ("Alliance", format!("{}", nation.alliance_id), true),
             (
