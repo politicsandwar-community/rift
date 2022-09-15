@@ -1,6 +1,6 @@
 use poise::serenity_prelude::CreateEmbed;
 
-use crate::{consts, enums::pnw::Continent, structs::Nation, types::Context};
+use crate::{consts, enums, structs::Nation, traits::Enum, types::Context};
 
 pub fn nation<'a>(
     ctx: &'a Context,
@@ -21,18 +21,40 @@ pub fn nation<'a>(
             ("Nation ID", format!("{}", nation.id), true),
             ("Name", nation.name.to_string(), true),
             ("Leader", nation.leader.to_string(), true),
-            ("War Policy", format!("{}", nation.war_policy), true),
             (
-                "Domestic Policy",
-                format!("{}", nation.domestic_policy),
+                "War Policy",
+                enums::pnw::WarPolicy::from_i16(nation.war_policy)
+                    .unwrap()
+                    .to_string(),
                 true,
             ),
-            ("Continent", "test".to_string(), true),
-            ("Colour", format!("{}", nation.color), true),
+            (
+                "Domestic Policy",
+                enums::pnw::DomesticPolicy::from_i16(nation.domestic_policy)
+                    .unwrap()
+                    .to_string(),
+                true,
+            ),
+            (
+                "Continent",
+                enums::pnw::Continent::from_i16(nation.continent)
+                    .unwrap()
+                    .to_string(),
+                true,
+            ),
+            (
+                "Colour",
+                enums::pnw::Color::from_i16(nation.color)
+                    .unwrap()
+                    .to_string(),
+                true,
+            ),
             ("Alliance", format!("{}", nation.alliance_id), true),
             (
                 "Alliance Position",
-                format!("{}", nation.alliance_position),
+                enums::pnw::AlliancePosition::from_i16(nation.alliance_position)
+                    .unwrap()
+                    .to_string(),
                 true,
             ),
             ("Cities", format!("{}", nation.num_cities), true),

@@ -1,7 +1,7 @@
 use enum_derive::Enum;
 use strum_macros::{AsStaticStr, Display};
 
-#[derive(AsStaticStr, Enum)]
+#[derive(AsStaticStr, Display, Enum)]
 pub enum AlliancePosition {
     NoAlliance = 0,
     Applicant = 1,
@@ -11,7 +11,7 @@ pub enum AlliancePosition {
     Leader = 5,
 }
 
-#[derive(AsStaticStr, Enum)]
+#[derive(AsStaticStr, Display, Enum)]
 pub enum Color {
     Beige = 0,
     Gray = 1,
@@ -42,7 +42,7 @@ pub enum Continent {
     Antarctica = 7,
 }
 
-#[derive(AsStaticStr, Enum)]
+#[derive(AsStaticStr, Display, Enum)]
 pub enum WarPolicy {
     Attrition = 1,
     Turtle = 2,
@@ -56,7 +56,7 @@ pub enum WarPolicy {
     Arcane = 10,
 }
 
-#[derive(AsStaticStr, Enum)]
+#[derive(AsStaticStr, Display, Enum)]
 pub enum DomesticPolicy {
     ManifestDestiny = 1,
     OpenMarkets = 2,

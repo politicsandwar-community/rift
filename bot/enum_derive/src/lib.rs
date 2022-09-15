@@ -25,7 +25,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     });
     let gen = quote! {
         impl crate::traits::Enum for #name {
-            fn from_i32(value: i32) -> Option<Box<Self>> {
+            fn from_i16(value: i16) -> Option<Box<Self>> {
                 match value {
                     #( #variants )*
                     _ => None,
