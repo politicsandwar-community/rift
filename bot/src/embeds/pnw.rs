@@ -52,12 +52,15 @@ pub fn nation<'a>(
             ),
             (
                 "Alliance",
-                Url::parse(&format!(
-                    "{}{}",
-                    "https://politicsandwar.com/alliance/id=", nation.alliance_id
-                ))
-                .expect("somtinbroke")
-                .to_string(),
+                format!(
+                    "[{}]({})",
+                    nation.alliance_id,
+                    Url::parse(&format!(
+                        "{}{}",
+                        "https://politicsandwar.com/alliance/id=", nation.alliance_id
+                    ))
+                    .expect("somtinbroke")
+                ),
                 true,
             ),
             (
