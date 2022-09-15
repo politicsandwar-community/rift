@@ -1,4 +1,5 @@
 use poise::serenity_prelude::CreateEmbed;
+use url::{ParseError, Url};
 
 use crate::{consts, enums, structs::Nation, traits::Enum, types::Context};
 
@@ -49,7 +50,16 @@ pub fn nation<'a>(
                     .to_string(),
                 true,
             ),
-            ("Alliance", format!("{}", nation.alliance_id), true),
+            (
+                "Alliance",
+                Url::parse(&format!(
+                    "{}{}",
+                    "https://politicsandwar.com/alliance/id=", nation.alliance_id
+                ))
+                .expect("somtinbroke")
+                .to_string(),
+                true,
+            ),
             (
                 "Alliance Position",
                 enums::pnw::AlliancePosition::from_i16(nation.alliance_position)

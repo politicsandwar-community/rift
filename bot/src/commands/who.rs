@@ -25,7 +25,7 @@ async fn who(
         domestic_policy: 1,
         color: 1,
         num_cities: 30,
-        score: BigDecimal::from_str(&"4003.3").unwrap(),
+        score: BigDecimal::from_str("4003.3").unwrap(),
         flag: String::from(
             "https://politicsandwar.com/uploads/33e0b12e9a0b4a535fc23bea764bcdd0b9f1f158513.png",
         ),
@@ -51,9 +51,10 @@ async fn who(
         estimated_resources: None,
     };
     limi.save(ctx.data(), true).await?;
-
+    let nation_id: u64;
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let gotten_user = ctx.data().cache.get_user(u.id.0);
+    nation_id = u.id.0;
+    let gotten_user = ctx.data().cache.get_user(nation_id);
 
     match gotten_user {
         Some(user) => {
