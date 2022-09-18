@@ -1,5 +1,5 @@
 use poise::serenity_prelude::CreateEmbed;
-use url::{ParseError, Url};
+use url::Url;
 
 use crate::{consts, enums, structs::Nation, traits::Enum, types::Context};
 
