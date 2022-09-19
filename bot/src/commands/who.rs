@@ -9,6 +9,7 @@ async fn who(
     ctx: Context<'_>,
     #[description = "Selected user"] user: Option<serenity::User>,
 ) -> Result<(), Error> {
+    let nation_id: u64;
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
     let nation_id = u.id.0;
     let gotten_user = ctx.data().cache.get_user(&(nation_id as i64));
