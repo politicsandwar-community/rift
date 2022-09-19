@@ -1,0 +1,4 @@
+pub const MAX_SOLDIERS_PER_CITY: i32 = 15000;
+pub const MAX_TANKS_PER_CITY: i32 = 1250;
+pub const MAX_AIRCRAFT_PER_CITY: i32 = 75;
+pub const MAX_SHIPS_PER_CITY: i32 = 15;

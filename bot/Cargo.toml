@@ -8,12 +8,17 @@ tokio = { version = "1.20.1", features = ["rt-multi-thread"] }
 poise = "0.3.0" 
 dotenv = "0.15.0"
 async-trait = "0.1.57"
-model_derive = {path = "model_derive"}
 sqlx = { version = "0.6.1", features = ["runtime-tokio-rustls", "postgres", "bigdecimal", "uuid", "time"] }
 uuid = "1.1.2"
 bigdecimal = "0.3.0"
 dashmap = { version = "5.3.4" }
 time = "0.3.13"
+strum_macros = "0.9.0"
+strum = "0.10.0"
+url = "2.3.1"
+
+enum_derive = { path = "enum_derive"}
+model_derive = {path = "model_derive"}
 
 [dependencies.serenity]
 version = "0.11.5"
