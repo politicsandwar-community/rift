@@ -1,12 +1,14 @@
 use bigdecimal::BigDecimal;
+use expose_derive::Expose;
 use model_derive::Model;
 use time::OffsetDateTime;
 
 use crate::structs::resources::Resources;
 
-#[derive(Clone, Model)]
+#[derive(Clone, Model, Expose)]
 #[table = "alliances"]
 pub struct Alliance {
+    #[expose]
     pub id: i32,
     pub name: String,
     pub acronym: Option<String>,
