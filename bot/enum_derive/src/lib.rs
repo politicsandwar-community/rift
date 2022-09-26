@@ -1,13 +1,13 @@
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 
 #[proc_macro_derive(Enum)]
-pub fn model_derive(input: TokenStream) -> TokenStream {
+pub fn enum_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
-    impl_model_derive(&ast)
+    impl_enum_derive(&ast)
 }
 
-fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
+fn impl_enum_derive(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let values = match &ast.data {
         syn::Data::Enum(data) => &data.variants,
