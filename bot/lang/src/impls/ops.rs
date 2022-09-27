@@ -134,6 +134,12 @@ impl Div for Value {
     type Output = ValueResult;
 
     fn div(self, rhs: Self) -> Self::Output {
+        if rhs == Value::Int(0)
+            || rhs == Value::Float(0.0)
+            || rhs == Value::Decimal(BigDecimal::from(0))
+        {
+            return Err(RuntimeError::DivisionByZero);
+        }
         match (self, rhs) {
             (Value::Int(a), Value::Int(b)) => Ok((a / b).into()),
             (Value::Int(a), Value::Float(b)) => Ok((a as f64 / b).into()),

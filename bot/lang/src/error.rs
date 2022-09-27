@@ -13,8 +13,8 @@ pub enum RuntimeError {
     NotIndexable(Value),
     IndexOutOfBounds(i64),
     NotCallable(Value),
-
     InvalidOp(Op, Option<Value>, Value),
+    DivisionByZero,
 }
 
 #[derive(Clone, Debug)]
