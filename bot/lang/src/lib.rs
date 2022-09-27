@@ -16,6 +16,7 @@ lalrpop_mod!(lang);
 
 #[cfg(test)]
 mod tests {
+    use bigdecimal::BigDecimal;
     use std::str::FromStr;
 
     use super::*;
@@ -85,8 +86,8 @@ mod tests {
             Value::Bool(true)
         );
         assert_eq!(
-            Program::compile("d1.5").unwrap().execute(&ctx).unwrap(),
-            Value::String("d1.5".to_string())
+            Program::compile("d1.5 + 1").unwrap().execute(&ctx).unwrap(),
+            Value::Decimal(BigDecimal::from_str("2.5").unwrap())
         );
     }
 }
