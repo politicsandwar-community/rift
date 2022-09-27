@@ -16,6 +16,8 @@ lalrpop_mod!(lang);
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
 
     #[test]
@@ -81,6 +83,10 @@ mod tests {
                 .execute(&ctx)
                 .unwrap(),
             Value::Bool(true)
-        )
+        );
+        assert_eq!(
+            Program::compile("d1.5").unwrap().execute(&ctx).unwrap(),
+            Value::String("d1.5".to_string())
+        );
     }
 }

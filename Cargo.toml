@@ -2,3 +2,10 @@
 members = [
 	"bot"
 ]
+
+[profile.bench]
+opt-level = 3
+lto = true
+
+[profile.bench.build-override]
+opt-level = 3

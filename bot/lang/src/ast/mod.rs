@@ -41,7 +41,6 @@ pub enum Ast {
 }
 
 impl Ast {
-    #[inline(always)]
     pub fn execute(&self, ctx: &Context) -> ValueResult {
         match self {
             Ast::Ident(ast, ident) => match ast.as_ref() {

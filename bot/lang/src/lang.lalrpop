@@ -15,7 +15,9 @@ EqExpr = Tier<EqOp, AddExpr>;
 
 AddExpr = Tier<AddOp, MulExpr>;
 
-MulExpr = Tier<MulOp, UnaryExpr>;
+MulExpr = Tier<MulOp, PowExpr>;
+
+PowExpr = Tier<PowOp, UnaryExpr>;
 
 UnaryExpr = {
     <op:UnaryOp> <right:Primary> => Ast::Expr(None, op, Box::new(right)),
@@ -76,7 +78,7 @@ UnaryOp: Op = {
 Value: Value = {
     r"[+-]?[0-9]+" => Value::Int(i64::from_str(<>).unwrap()),
     r"[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?" => Value::Float(f64::from_str(<>).unwrap()),
-    "d" <r"[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?"> => Value::Decimal(BigDecimal::from_str(<>).unwrap()),
+    "d" <r"[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?"> => Value::String(<>.to_string()),
     r#""([^"\\]|\\.)*""# => Value::String(<>.to_string()),
     "true" => Value::Bool(true),
     "false" => Value::Bool(false),
