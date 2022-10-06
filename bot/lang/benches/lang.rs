@@ -32,7 +32,14 @@ fn criterion_benchmark(c: &mut Criterion) {
         ("bool", "true"),
     ];
 
+    c.bench_function("string_test", |b| b.iter(|| "test".to_string()));
+    c.bench_function("format_str", |b| b.iter(|| format!("test {}", "test")));
+    c.bench_function("format_string", |b| b.iter(|| format!("test {}", "test")));
+
     for (name, source) in black_box(&benchmarks) {
+        c.bench_function(format!("compile {}", name).as_str(), |b| {
+            b.iter(|| Program::compile(source))
+        });
         c.bench_function(name, |b| {
             let program = Program::compile(source).unwrap();
             let ctx = Context::default();
