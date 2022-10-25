@@ -12,6 +12,12 @@ impl From<i64> for Value {
     }
 }
 
+impl From<i32> for Value {
+    fn from(value: i32) -> Self {
+        Value::Int(value as i64)
+    }
+}
+
 impl From<f64> for Value {
     fn from(value: f64) -> Self {
         Value::Float(value)

@@ -17,14 +17,11 @@ async fn who(
     let nation_id: u64;
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
     nation_id = u.id.0;
-    let gotten_user = ctx.data().cache.get_user(nation_id);
+    let gotten_user = ctx.data().cache.get_user(&(nation_id as i64));
 
     match gotten_user {
         Some(user) => {
-            let n = ctx
-                .data()
-                .cache
-                .get_nation(i32::try_from(user.nation_id.unwrap())?);
+            let n = ctx.data().cache.get_nation(&user.nation_id.unwrap());
             match n {
                 Some(n) => {
                     ctx.send(|f| f.embed(crate::embeds::pnw::nation(&ctx, &n)))

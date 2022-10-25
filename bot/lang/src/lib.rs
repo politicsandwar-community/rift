@@ -14,6 +14,10 @@ pub use crate::program::Program;
 
 lalrpop_mod!(lang);
 
+pub trait Expose {
+    fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult;
+}
+
 #[cfg(test)]
 mod tests {
     use bigdecimal::BigDecimal;

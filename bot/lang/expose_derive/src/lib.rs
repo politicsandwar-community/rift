@@ -21,7 +21,7 @@ fn impl_expose_derive(ast: &syn::DeriveInput) -> TokenStream {
             let ident = field.ident.as_ref().expect("field must have an identifier");
             let string = ident.to_string();
             quote! {
-                #string => Ok(#name.#ident.into()),
+                #string => Ok(self.#ident.into()),
             }
         });
     let gen = quote! {

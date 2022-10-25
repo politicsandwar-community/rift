@@ -2,7 +2,18 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::Expr;
 
-#[proc_macro_derive(Model, attributes(table, no_save, primary_key, no_type_check))]
+#[proc_macro_derive(
+    Model,
+    attributes(
+        table,
+        no_save,
+        primary_key,
+        no_type_check,
+        cache_id,
+        cache_type,
+        cache_unwrap
+    )
+)]
 pub fn model_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
     impl_model_derive(&ast)
@@ -46,6 +57,29 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .split(',')
         .map(|s| s.trim().to_string())
         .collect();
+    let cache_id = get_option_attr(ast, "cache_id");
+    if primary_keys.len() > 1 && cache_id.is_none() {
+        panic!("if specifying more than one primary key, you must specify a cache_id");
+    }
+    let cache_id: Expr = syn::parse_str(
+        format!(
+            "{}{}",
+            cache_id.unwrap_or_else(|| primary_keys[0].clone()).as_str(),
+            if get_option_attr(ast, "cache_unwrap").is_some() {
+                ".unwrap()"
+            } else {
+                ""
+            },
+        )
+        .as_str(),
+    )
+    .unwrap();
+    let cache_type: Expr = syn::parse_str(
+        get_option_attr(ast, "cache_type")
+            .unwrap_or_else(|| "i32".to_string())
+            .as_str(),
+    )
+    .unwrap();
     let mut no_type_check_columns: Vec<String> = vec![];
     let columns: Vec<String> = data
         .fields
@@ -115,47 +149,44 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .iter()
         .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
         .collect::<Vec<syn::Expr>>();
-    let gen = if no_type_check_columns.is_empty() {
-        quote! {
-                #[async_trait::async_trait]
-                impl crate::traits::Model for #name {
-                    const TABLE: &'static str = #table;
-
-                    async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
-                        if (insert) {
-                            let result = sqlx::query_as!(Self, #insert_statement, #(#struct_values),*)
-                                .fetch_one(&data.pool)
-                                .await?;
-                            self.clone_from(&result);
-                        } else {
-                            sqlx::query_as!(Self, #update_statement, #(#struct_values),*)
-                                .fetch_one(&data.pool)
-                                .await?;
-                        }
-                        Ok(())
-                    }
-                }
-
-        }
+    let select_query = format!("SELECT * FROM {table};");
+    let query_func: Expr = syn::parse_str(if no_type_check_columns.is_empty() {
+        "query_as"
     } else {
-        quote! {
-            #[async_trait::async_trait]
-            impl crate::traits::Model for #name {
-                const TABLE: &'static str = #table;
+        "query_as_unchecked"
+    })
+    .unwrap();
+    let gen = quote! {
+        #[async_trait::async_trait]
+        impl crate::traits::Model for #name {
+            const TABLE: &'static str = #table;
+            type Key = #cache_type;
+            type Map = dashmap::DashMap<Self::Key, Self>;
 
-                async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
-                    if (insert) {
-                        let result = sqlx::query_as_unchecked!(Self, #insert_statement, #(#struct_values),*)
-                            .fetch_one(&data.pool)
-                            .await?;
-                        self.clone_from(&result);
-                    } else {
-                        sqlx::query_as_unchecked!(Self, #update_statement, #(#struct_values),*)
-                            .fetch_one(&data.pool)
-                            .await?;
-                    }
-                    Ok(())
+            async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
+                if (insert) {
+                    let result = sqlx::#query_func!(Self, #insert_statement, #(#struct_values),*)
+                        .fetch_one(&data.pool)
+                        .await?;
+                    self.clone_from(&result);
+                } else {
+                    sqlx::#query_func!(Self, #update_statement, #(#struct_values),*)
+                        .fetch_one(&data.pool)
+                        .await?;
                 }
+                Ok(())
+            }
+
+            async fn select_all_as_map(pool: &sqlx::Pool<sqlx::Postgres>) -> Self::Map {
+                let res = sqlx::#query_func!(Self, #select_query)
+                    .fetch_all(pool)
+                    .await
+                    .unwrap();
+                let map = dashmap::DashMap::with_capacity(res.len());
+                for i in res {
+                    map.insert(i.#cache_id, i);
+                }
+                map
             }
         }
     };
