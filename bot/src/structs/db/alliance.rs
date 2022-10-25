@@ -7,6 +7,7 @@ use crate::structs::resources::Resources;
 
 #[derive(Clone, Model, Expose)]
 #[table = "alliances"]
+#[cache_name = "alliance"]
 pub struct Alliance {
     #[expose]
     pub id: i32,

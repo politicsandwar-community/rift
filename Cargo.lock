@@ -1305,6 +1305,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "pnwkit"
+version = "3.0.0-alpha.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf1bd8ac204a3540b57957273987409fcf2a8bb5f19de36f0b233e32744c30ef"
+dependencies = [
+ "pnwkit-core",
+ "reqwest",
+]
+
+[[package]]
+name = "pnwkit-core"
+version = "0.1.0-alpha.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "48c3619e7fa62c9057847273faff839082fe27a2849a7ae0bca1313332e9cb10"
+dependencies = [
+ "async-trait",
+ "dashmap",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "poise"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1528,6 +1550,7 @@ dependencies = [
  "lang",
  "model_derive",
  "paste",
+ "pnwkit",
  "poise",
  "serenity",
  "sqlx",

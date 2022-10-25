@@ -10,8 +10,11 @@ use syn::Expr;
         primary_key,
         no_type_check,
         cache_id,
+        cache_name,
         cache_type,
-        cache_unwrap
+        cache_unwrap,
+        field,
+        field_default,
     )
 )]
 pub fn model_derive(input: TokenStream) -> TokenStream {
@@ -19,16 +22,16 @@ pub fn model_derive(input: TokenStream) -> TokenStream {
     impl_model_derive(&ast)
 }
 
-fn get_table_attr(ast: &syn::DeriveInput) -> String {
-    match ast.attrs.iter().find(|attr| attr.path.is_ident("table")) {
+fn get_struct_attr(ast: &syn::DeriveInput, name: &str) -> String {
+    match ast.attrs.iter().find(|attr| attr.path.is_ident(name)) {
         Some(attr) => match attr.parse_meta().unwrap() {
             syn::Meta::NameValue(meta) => match meta.lit {
                 syn::Lit::Str(lit) => lit.value(),
-                _ => panic!("table attribute must be a string literal"),
+                _ => panic!("{} attribute must be a string literal", name),
             },
-            _ => panic!("table attribute must be a string literal"),
+            _ => panic!("{} attribute must be a string literal", name),
         },
-        None => panic!("Model derives must have a table attribute"),
+        None => panic!("Models must have a {} attribute", name),
     }
 }
 
@@ -51,7 +54,8 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         _ => panic!("Modal can only be derived on structs"),
     };
     let name = &ast.ident;
-    let table = get_table_attr(ast);
+    let table = get_struct_attr(ast, "table");
+    let cache_name = get_struct_attr(ast, "cache_name");
     let primary_keys: Vec<String> = get_option_attr(ast, "primary_key")
         .unwrap_or_else(|| "id".to_string())
         .split(',')
@@ -156,6 +160,10 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         "query_as_unchecked"
     })
     .unwrap();
+    let insert_cache_name: Expr =
+        syn::parse_str(format!("insert_{}", cache_name).as_str()).unwrap();
+    let update_cache_name: Expr =
+        syn::parse_str(format!("update_{}", cache_name).as_str()).unwrap();
     let gen = quote! {
         #[async_trait::async_trait]
         impl crate::traits::Model for #name {
@@ -168,11 +176,13 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                     let result = sqlx::#query_func!(Self, #insert_statement, #(#struct_values),*)
                         .fetch_one(&data.pool)
                         .await?;
+                    data.cache.#insert_cache_name(self.#cache_id, self.clone());
                     self.clone_from(&result);
                 } else {
                     sqlx::#query_func!(Self, #update_statement, #(#struct_values),*)
                         .fetch_one(&data.pool)
                         .await?;
+                    data.cache.#update_cache_name(&self.#cache_id, &self);
                 }
                 Ok(())
             }

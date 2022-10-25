@@ -52,6 +52,8 @@ macro_rules! cache {
 }
 
 cache!(
-    user, users, User
+    alliance, alliances, Alliance
+    city, cities, City
     nation, nations, Nation
+    user, users, User
 );

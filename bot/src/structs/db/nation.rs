@@ -6,6 +6,7 @@ use crate::structs::resources::Resources;
 
 #[derive(Clone, Model)]
 #[table = "nations"]
+#[cache_name = "nation"]
 pub struct Nation {
     pub id: i32,
     pub alliance_id: i32,
