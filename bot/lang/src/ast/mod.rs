@@ -96,11 +96,7 @@ impl Ast {
             },
             Ast::Literal(value) => Ok(value.clone()),
             Ast::Expr(lhs_ast, op, rhs_ast) => {
-                let rhs = rhs_ast.execute(ctx);
-                if let Err(err) = rhs {
-                    return Err(err);
-                }
-                let rhs = rhs.unwrap();
+                let rhs = rhs_ast.execute(ctx)?;
 
                 let lhs = match lhs_ast {
                     Some(ast) => match ast.execute(ctx) {
