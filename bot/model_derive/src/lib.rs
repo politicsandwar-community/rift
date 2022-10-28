@@ -353,9 +353,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         }
     } else {
         quote! {
-            fn start_subscriptions(data: &crate::structs::data::Data) {
-                unimplemented!()
-            }
+            fn start_subscriptions(data: &crate::structs::data::Data) {}
         }
     };
 

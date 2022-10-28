@@ -24,12 +24,11 @@ impl Data {
                 .set_api_key(std::env::var("API_KEY").expect("API_KEY must be set"))
                 .to_kit(),
         );
-        lock(cache.clone()).await;
 
-        Data { pool, cache, kit }
+        let data = Data { pool, cache, kit };
+
+        data.cache.start_subscriptions(&data);
+
+        data
     }
-}
-
-async fn lock(cache: Arc<super::Cache>) {
-    cache.lock_nation(&1).await;
 }
