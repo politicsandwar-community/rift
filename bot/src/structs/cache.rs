@@ -1,50 +1,77 @@
-use dashmap::DashMap;
+use crate::traits::Model;
 use sqlx::{Pool, Postgres};
 
-pub struct Cache {
-    users: DashMap<i64, super::User>,
-    nations: DashMap<i32, super::Nation>,
-}
-
-#[allow(dead_code)]
-impl Cache {
-    pub async fn hydrate(pool: &Pool<Postgres>) -> Self {
-        let users_data = sqlx::query_as!(super::User, "SELECT * FROM users;")
-            .fetch_all(pool)
-            .await
-            .unwrap();
-        let users = DashMap::with_capacity(users_data.len());
-        for user in users_data {
-            users.insert(user.user_id.unwrap(), user);
+macro_rules! cache {
+    ($($name:ident, $plural:ident, $type:ident, $store:ident)*) => {
+        pub struct Cache {
+            $(
+                $plural: <crate::structs::$type as Model>::Map,
+            )*
+            $(
+                $store: crate::structs::LockStore<<crate::structs::$type as Model>::Key>,
+            )*
         }
 
-        let nations_data = sqlx::query_as_unchecked!(super::Nation, "SELECT * FROM nations;")
-            .fetch_all(pool)
-            .await
-            .unwrap();
-        let nations = DashMap::with_capacity(nations_data.len());
-        for nation in nations_data {
-            nations.insert(nation.id, nation);
+        impl Cache {
+            pub async fn hydrate(pool: &Pool<Postgres>) -> Self {
+                Self {
+                    $(
+                        $plural: super::$type::select_all_as_map(pool).await,
+                    )*
+                    $(
+                        $store: crate::structs::LockStore::new(),
+                    )*
+                }
+            }
+
+            pub fn start_subscriptions(&self, data: &crate::structs::Data) {
+                $(
+                    crate::structs::$type::start_subscriptions(data);
+                )*
+            }
+
+            paste::paste! {
+                $(
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub fn [<get_ $name>](&self, key: &<crate::structs::$type as Model>::Key) -> Option<crate::structs::$type> {
+                        self.$plural.get(key).map(|v| v.clone())
+                    }
+
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub fn [<insert_ $name>](&self, key: <crate::structs::$type as Model>::Key, value: crate::structs::$type) {
+                        self.$plural.insert(key, value);
+                    }
+
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub fn [<remove_ $name>](&self, key: &<crate::structs::$type as Model>::Key) {
+                        self.$plural.remove(key);
+                    }
+
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub fn [<update_ $name>](&self, key: &<crate::structs::$type as Model>::Key, value: &super::$type) {
+                        if let Some(mut v) = self.$plural.get_mut(key) {
+                            v.clone_from(&value);
+                        }
+                    }
+
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub async fn [<lock_ $name>](&self, key: &<crate::structs::$type as Model>::Key) -> crate::structs::LockGuard<<crate::structs::$type as Model>::Key> {
+                        self.$store.lock(*key).await
+                    }
+                )*
+            }
         }
-
-        Self { nations, users }
-    }
-
-    pub fn insert_user(&mut self, user: super::User) {
-        self.users.insert(user.user_id.unwrap(), user);
-    }
-
-    pub fn get_user(&self, id: u64) -> Option<super::User> {
-        self.users
-            .get(&i64::try_from(id).unwrap())
-            .map(|i| i.clone())
-    }
-
-    pub fn remove_user(&mut self, id: i64) {
-        self.users.remove(&id);
-    }
-
-    pub fn get_nation(&self, id: i32) -> Option<super::Nation> {
-        self.nations.get(&id).map(|i| i.clone())
-    }
+    };
 }
+
+cache!(
+    alliance, alliances, Alliance, alliance_locks
+    city, cities, City, city_locks
+    nation, nations, Nation, nation_locks
+    user, users, User, user_locks
+);

@@ -1,0 +1,130 @@
+use crate::ast::{Arr, Ast, Op, Value};
+use bigdecimal::BigDecimal;
+// use dashmap::DashMap;
+use std::str::FromStr;
+
+grammar;
+
+pub Expression: Ast = {
+    CondExpr,
+};
+
+CondExpr: Ast = Tier<CondOp, EqExpr>;
+
+EqExpr = Tier<EqOp, AddExpr>;
+
+AddExpr = Tier<AddOp, MulExpr>;
+
+MulExpr = Tier<MulOp, PowExpr>;
+
+PowExpr = Tier<PowOp, UnaryExpr>;
+
+UnaryExpr = {
+    <op:UnaryOp> <right:Primary> => Ast::Expr(None, op, Box::new(right)),
+    Member,
+}
+
+Member: Ast = {
+    <left:Primary> "." <right:Ident> => Ast::Ident(Some(Box::new(left)), right),
+    <left:Primary> "[" <right:Expression> "]" => Ast::Index(Box::new(left), Box::new(right)),
+
+    Primary,
+}
+
+Primary: Ast = {
+    Ident => Ast::Ident(None, <>),
+    <left: Primary> "(" <args:Csv<Expression>> ")" => Ast::Call(Box::new(left), args),
+    Value => Ast::Literal(<>),
+    Array => Ast::Literal(Value::Array(Arr(<>))),
+    // Map => Ast::Literal(Value::Map(<>)),
+    NestedExpr,
+}
+
+CondOp: Op = {
+    "&&" => Op::And,
+    "||" => Op::Or,
+}
+
+EqOp: Op = {
+    "==" => Op::Eq,
+    "!=" => Op::Ne,
+    "<" => Op::Lt,
+    "<=" => Op::Le,
+    ">" => Op::Gt,
+    ">=" => Op::Ge,
+}
+
+AddOp: Op = {
+    "+" => Op::Add,
+    "-" => Op::Sub,
+}
+
+MulOp: Op = {
+    "*" => Op::Mul,
+    "/" => Op::Div,
+    "//" => Op::Floor,
+    "%" => Op::Mod,
+}
+
+PowOp: Op = {
+    "**" => Op::Pow,
+}
+
+UnaryOp: Op = {
+    "!" => Op::Not,
+    "-" => Op::Neg,
+}
+
+Value: Value = {
+    r"[+-]?[0-9]+" => Value::Int(i64::from_str(<>).unwrap()),
+    r"[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?" => Value::Float(f64::from_str(<>).unwrap()),
+    r"d[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?" => Value::Decimal(BigDecimal::from_str(&<>[1..]).unwrap()),
+    r#""([^"\\]|\\.)*""# => Value::String(<>.to_string()),
+    "true" => Value::Bool(true),
+    "false" => Value::Bool(false),
+}
+
+
+Bool: bool = {
+    "true" => true,
+    "false" => false,
+};
+
+Ident: String = r"[a-zA-Z_][a-zA-Z0-9_]*" => <>.to_string();
+
+Csv<T>: Vec<T> = {
+    <v:(<T> ",")*> <e:T?> => {
+        let mut v = v;
+        if let Some(e) = e {
+            v.push(e);
+        }
+        v
+    },
+}
+CsvMin1<T>: Vec<T> = {
+    <v:(<T> ",")+> <e:T?> => {
+        let mut v = v;
+        if let Some(e) = e {
+            v.push(e);
+        }
+        v
+    },
+}
+
+
+Array: Vec<Ast> = "[" <Csv<Expression>> "]";
+// Map: Vec<(Expression, Expression)> = "{" <Csv<MapItem>> "}" => {
+//     let v = <>;
+//     let mut map = DashMap::with_capacity(v.len());
+//     for item in v {
+//         map.insert(item.0, item.1);
+//     }
+// };
+// MapItem: (Expression, Expression) = <key:Expression> ":" <value:Expression> => (key, value);
+
+NestedExpr: Ast = "(" <Expression> ")";
+
+Tier<Op, NextTier>: Ast = {
+    <left:Tier<Op, NextTier>> <op:Op> <right:NextTier> => Ast::Expr(Some(Box::new(left)), op, Box::new(right)),
+    NextTier,
+};
