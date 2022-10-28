@@ -187,7 +187,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     let delete_cache_name: Expr =
         syn::parse_str(format!("remove_{}", cache_name).as_str()).unwrap();
 
-    let object_exprs: Vec<(String, Expr)> = data
+    let object_exprs: Vec<(String, Option<Expr>)> = data
         .fields
         .iter()
         .map(|field| {
@@ -209,6 +209,9 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             } else {
                 name.clone()
             };
+            if name == "lock" {
+                return ("lock: std::sync::Arc::new(tokio::sync::Mutex::new(())),".to_string(), None);
+            }
             if let Some(field_custom) = field_custom {
                 let field_custom = field_custom
                     .parse_args::<syn::LitStr>()
@@ -223,30 +226,34 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                             format!("o.get(\"{field}\").expect(\"expecting field {field}\").value().into()").as_str()
                         )
                     ),
-                    syn::parse_str::<Expr>(
-                        format!(
-                            "self.{} = {}",
-                            &name,
-                            field_custom.replace(
-                                "{get}",
-                                format!("o.get(\"{field}\").expect(\"expecting field {field}).value().into()").as_str()
+                    Some(
+                        syn::parse_str::<Expr>(
+                            format!(
+                                "self.{} = {}",
+                                &name,
+                                field_custom.replace(
+                                    "{get}",
+                                    format!("o.get(\"{field}\").expect(\"expecting field {field}).value().into()").as_str()
+                                )
                             )
+                            .as_str(),
                         )
-                        .as_str(),
+                        .unwrap()
                     )
-                    .unwrap(),
                 )
             } else {
                 (
                     format!("{}: o.get(\"{}\").unwrap().value().into(),", &name, &field),
-                    syn::parse_str::<Expr>(
-                        format!(
-                            "self.{} = o.get(\"{}\").unwrap().value().into()",
-                            &name, &field
+                    Some(
+                        syn::parse_str::<Expr>(
+                            format!(
+                                "self.{} = o.get(\"{}\").unwrap().value().into()",
+                                &name, &field
+                            )
+                            .as_str(),
                         )
-                        .as_str(),
-                    )
-                    .unwrap(),
+                        .unwrap()
+                    ),
                 )
             }
         })
@@ -263,7 +270,11 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .as_str(),
     )
     .unwrap();
-    let update_from_object = object_exprs.iter().map(|(_, i)| i).collect::<Vec<_>>();
+    let update_from_object = object_exprs
+        .iter()
+        .filter(|(_, i)| i.is_some())
+        .map(|(_, i)| i.as_ref().unwrap())
+        .collect::<Vec<_>>();
 
     let subscriptions = if let Some(name) = get_option_attr(ast, "subscriptions") {
         let name: Expr = syn::parse_str(name.as_str()).unwrap();
@@ -302,7 +313,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                         tokio::spawn(async move {
                             let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
                             if let Some(mut value) = value {
-                                // let mut value = value.lock();
+                                value.lock(&data).await;
                                 value.update_from_object(obj);
                                 if let Err(e) = value.save(&data, false).await {
                                     panic!("error saving object: {}", e);
@@ -325,7 +336,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                         tokio::spawn(async move {
                             let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
                             if let Some(mut value) = value {
-                                // let mut value = value.lock();
+                                value.lock(&data).await;
                                 if let Err(e) = value.delete(&data).await {
                                     panic!("error deleting   object: {}", e);
                                 }
@@ -347,7 +358,8 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             }
         }
     };
-    // panic!("{}", subscriptions.to_string());
+
+    let lock_cache_name: Expr = syn::parse_str(format!("lock_{}", cache_name).as_str()).unwrap();
 
     let gen = quote! {
         #[async_trait::async_trait]
@@ -396,11 +408,14 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             fn update_from_object(&mut self, o: pnwkit::Object) {
-                // unimplemented!()
                 #(#update_from_object;)*
             }
 
             #subscriptions
+
+            async fn lock(&self, data: &crate::structs::data::Data) -> crate::structs::LockGuard<Self::Key> {
+                data.cache.#lock_cache_name(&self.#cache_id).await
+            }
         }
     };
     gen.into()

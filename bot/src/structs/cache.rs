@@ -2,10 +2,13 @@ use crate::traits::Model;
 use sqlx::{Pool, Postgres};
 
 macro_rules! cache {
-    ($($name:ident, $plural:ident, $type:ident)*) => {
+    ($($name:ident, $plural:ident, $type:ident, $store:ident)*) => {
         pub struct Cache {
             $(
                 $plural: <crate::structs::$type as Model>::Map,
+            )*
+            $(
+                $store: crate::structs::LockStore<<crate::structs::$type as Model>::Key>,
             )*
         }
 
@@ -14,6 +17,9 @@ macro_rules! cache {
                 Self {
                     $(
                         $plural: super::$type::select_all_as_map(pool).await,
+                    )*
+                    $(
+                        $store: crate::structs::LockStore::new(),
                     )*
                 }
             }
@@ -45,6 +51,12 @@ macro_rules! cache {
                             v.clone_from(&value);
                         }
                     }
+
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub async fn [<lock_ $name>](&self, key: &<crate::structs::$type as Model>::Key) -> crate::structs::LockGuard<<crate::structs::$type as Model>::Key> {
+                        self.$store.lock(*key).await
+                    }
                 )*
             }
         }
@@ -52,8 +64,8 @@ macro_rules! cache {
 }
 
 cache!(
-    alliance, alliances, Alliance
-    city, cities, City
-    nation, nations, Nation
-    user, users, User
+    alliance, alliances, Alliance, alliance_locks
+    city, cities, City, city_locks
+    nation, nations, Nation, nation_locks
+    user, users, User, user_locks
 );

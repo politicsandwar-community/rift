@@ -19,4 +19,9 @@ pub trait Model: std::clone::Clone {
     fn update_from_object(&mut self, o: Object);
 
     fn start_subscriptions(data: &Data);
+
+    async fn lock(&self, data: &Data) -> crate::structs::LockGuard<Self::Key>
+    where
+        Self::Key:
+            std::cmp::Eq + std::hash::Hash + std::clone::Clone + Copy + Send + Sync + 'static;
 }

@@ -9,3 +9,4 @@ proc-macro = true
 [dependencies]
 syn = { version = "1.0", features = ["derive", "parsing"] }
 quote = "1.0"
+sqlx = { version = "0.6.1", features = ["runtime-tokio-rustls", "postgres", "bigdecimal", "uuid", "time"] }
