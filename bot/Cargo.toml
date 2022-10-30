@@ -31,7 +31,7 @@ features = ["builder", "client", "gateway", "model", "utils", "collector"]
 [dependencies.pnwkit]
 version = "3.0.0-alpha.1"
 features = ["async", "subscriptions", "uuid", "bigdecimal", "time"]
-path = "../../pnwkit/pnwkit-rs"
+# path = "../../pnwkit/pnwkit-rs"
 
 # [profile.dev.package.lang]
 # opt-level = 1
