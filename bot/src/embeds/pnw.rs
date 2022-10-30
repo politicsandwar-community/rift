@@ -101,6 +101,7 @@ pub fn nation<'a>(
             ),
             ("Missiles", format!("{}", nation.missiles), true),
             ("Nukes", format!("{}", nation.nukes), true),
+<<<<<<< HEAD
             (
                 "Average Infrastructure",
                 "Not Implimented".to_string(),
@@ -173,6 +174,10 @@ pub fn nation<'a>(
                 ),
                 true,
             ),
+=======
+            ("Average Infrastructure", "test".to_string(), true),
+            ("Average Land", "test".to_string(), true),
+>>>>>>> baeb6c1 (small changes)
         ])
     })
 }
