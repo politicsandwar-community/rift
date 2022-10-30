@@ -1468,6 +1468,8 @@ name = "pnwkit"
 version = "3.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d012fd1a34e364cae979429609e0c08de10f34863e03d1f3b370943dab0431ca"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d012fd1a34e364cae979429609e0c08de10f34863e03d1f3b370943dab0431ca"
 dependencies = [
  "futures-util",
  "pnwkit-core",
