@@ -35,20 +35,6 @@ services:
       - ./private.pem:/private.pem
     logging: *default-logging
 
-  rest:
-    container_name: rift-rest
-    image: postgrest/postgrest:v9.0.0
-    depends_on:
-      - db
-    restart: unless-stopped
-    environment:
-      PGRST_DB_URI: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
-      PGRST_DB_SCHEMA: public,storage
-      PGRST_DB_ANON_ROLE: anon
-      PGRST_JWT_SECRET: ${JWT_SECRET}
-      PGRST_DB_USE_LEGACY_GUCS: "false"
-    logging: *default-logging
-
   db:
     container_name: rift-db
     image: mrvillage/postgres:latest

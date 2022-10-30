@@ -233,7 +233,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                                 &name,
                                 field_custom.replace(
                                     "{get}",
-                                    format!("o.get(\"{field}\").expect(\"expecting field {field}).value().into()").as_str()
+                                    format!("o.get(\"{field}\").expect(\"expecting field {field}\").value().into()").as_str()
                                 )
                             )
                             .as_str(),
@@ -243,12 +243,11 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 )
             } else {
                 (
-                    format!("{}: o.get(\"{}\").unwrap().value().into(),", &name, &field),
+                    format!("{name}: o.get(\"{field}\").expect(\"expecting field {field}\").value().into(),"),
                     Some(
                         syn::parse_str::<Expr>(
                             format!(
-                                "self.{} = o.get(\"{}\").unwrap().value().into()",
-                                &name, &field
+                                "self.{name} = o.get(\"{field}\").expect(\"expecting field {field}\").value().into()",
                             )
                             .as_str(),
                         )

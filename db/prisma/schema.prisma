@@ -213,9 +213,9 @@ model builds {
   wind_power          Int?
   coal_mines          Int?
   lead_mines          Int?
-  bauxite_mine        Int?
-  oil_well            Int?
-  uranium_mine        Int?
+  bauxite_mines       Int?
+  oil_wells           Int?
+  uranium_mines       Int?
   iron_mines          Int?
   farms               Int?
   oil_refineries      Int?
@@ -246,16 +246,16 @@ model cities {
   date                DateTime  @db.Timestamptz(6)
   infrastructure      Decimal   @db.Decimal
   land                Decimal   @db.Decimal
-  powered             Boolean
+  // powered             Boolean
   coal_power          Int
   oil_power           Int
   nuclear_power       Int
   wind_power          Int
   coal_mines          Int
   lead_mines          Int
-  bauxite_mine        Int
-  oil_well            Int
-  uranium_mine        Int
+  bauxite_mines       Int
+  oil_wells           Int
+  uranium_mines       Int
   iron_mines          Int
   farms               Int
   oil_refineries      Int
@@ -524,7 +524,7 @@ model nations {
   vacation_mode_turns      Int
   beige_turns              Int
   espionage_available      Boolean
-  last_active              DateTime                  @db.Timestamptz(6)
+  // last_active              DateTime                  @db.Timestamptz(6)
   date                     DateTime                  @db.Timestamptz(6)
   soldiers                 Int
   tanks                    Int
@@ -539,7 +539,7 @@ model nations {
   wars_won                 Int
   wars_lost                Int
   tax_id                   Int
-  alliance_seniority       Int?
+  alliance_seniority       Int
   estimated_resources      Unsupported("resources")?
 
   @@ignore

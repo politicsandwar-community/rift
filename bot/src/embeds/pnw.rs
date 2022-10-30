@@ -1,7 +1,7 @@
 use poise::serenity_prelude::CreateEmbed;
 use url::Url;
 
-use crate::{consts, enums, structs::Nation, traits::Enum, types::Context};
+use crate::{consts, structs::Nation, types::Context};
 
 pub fn nation<'a>(
     ctx: &'a Context,
@@ -22,34 +22,10 @@ pub fn nation<'a>(
             ("Nation ID", format!("{}", nation.id), true),
             ("Name", nation.name.to_string(), true),
             ("Leader", nation.leader.to_string(), true),
-            (
-                "War Policy",
-                enums::pnw::WarPolicy::from_i16(nation.war_policy)
-                    .unwrap()
-                    .to_string(),
-                true,
-            ),
-            (
-                "Domestic Policy",
-                enums::pnw::DomesticPolicy::from_i16(nation.domestic_policy)
-                    .unwrap()
-                    .to_string(),
-                true,
-            ),
-            (
-                "Continent",
-                enums::pnw::Continent::from_i16(nation.continent)
-                    .unwrap()
-                    .to_string(),
-                true,
-            ),
-            (
-                "Colour",
-                enums::pnw::Color::from_i16(nation.color)
-                    .unwrap()
-                    .to_string(),
-                true,
-            ),
+            ("War Policy", nation.war_policy.to_string(), true),
+            ("Domestic Policy", nation.domestic_policy.to_string(), true),
+            ("Continent", nation.continent.to_string(), true),
+            ("Color", nation.color.to_string(), true),
             (
                 "Alliance",
                 format!(
@@ -65,9 +41,7 @@ pub fn nation<'a>(
             ),
             (
                 "Alliance Position",
-                enums::pnw::AlliancePosition::from_i16(nation.alliance_position)
-                    .unwrap()
-                    .to_string(),
+                nation.alliance_position.to_string(),
                 true,
             ),
             ("Cities", format!("{}", nation.num_cities), true),
@@ -115,8 +89,8 @@ pub fn nation<'a>(
             ),
             ("Missiles", format!("{}", nation.missiles), true),
             ("Nukes", format!("{}", nation.nukes), true),
-            ("Average Infrastructure", format!("test"), true),
-            ("Average Land", format!("test"), true),
+            ("Average Infrastructure", "test".to_string(), true),
+            ("Average Land", "test".to_string(), true),
         ])
     })
 }

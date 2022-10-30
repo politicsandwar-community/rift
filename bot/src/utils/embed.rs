@@ -1,4 +1,4 @@
-use poise::serenity_prelude::{CreateEmbedAuthor, EmbedField};
+use poise::serenity_prelude::CreateEmbedAuthor;
 
 pub fn embed_author(
     name: String,

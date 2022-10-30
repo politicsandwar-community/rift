@@ -1,6 +1,6 @@
-use poise::serenity_prelude::{CreateEmbed, EmbedField};
+use poise::serenity_prelude::CreateEmbed;
 
-use crate::{consts, structs::Nation, types::Context};
+use crate::{consts, types::Context};
 
 pub fn error<'a>(
     ctx: &'a Context,
