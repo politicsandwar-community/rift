@@ -1478,9 +1478,15 @@ dependencies = [
 
 [[package]]
 name = "pnwkit-core"
+<<<<<<< HEAD
 version = "0.1.0-alpha.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "847d66cd459f4cbe2b78a671ba10b86f46a51cc02c9bfeb2cce34b3a37141255"
+=======
+version = "0.1.0-alpha.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3067cc11fbdaccfabfad1e88e3f46695b60fa928831b11b4387f89d4574761c6"
+>>>>>>> f253c96 (cargo.lock)
 dependencies = [
  "async-trait",
  "bigdecimal",
