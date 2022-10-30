@@ -29,7 +29,7 @@ default-features = false
 features = ["builder", "client", "gateway", "model", "utils", "collector"]
 
 [dependencies.pnwkit]
-version = "3.0.0-alpha.1"
+version = "3.0.0-alpha.2"
 features = ["async", "subscriptions", "uuid", "bigdecimal", "time"]
 # path = "../../pnwkit/pnwkit-rs"
 
