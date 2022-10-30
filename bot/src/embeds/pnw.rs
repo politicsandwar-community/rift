@@ -115,8 +115,8 @@ pub fn nation<'a>(
             ),
             ("Missiles", format!("{}", nation.missiles), true),
             ("Nukes", format!("{}", nation.nukes), true),
-            ("Average Infrastructure", format!("test"), true),
-            ("Average Land", format!("test"), true),
+            ("Average Infrastructure", "test".to_string(), true),
+            ("Average Land", "test".to_string(), true),
         ])
     })
 }
