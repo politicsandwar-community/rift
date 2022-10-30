@@ -3,7 +3,7 @@ use expose_derive::Expose;
 use model_derive::Model;
 use time::OffsetDateTime;
 
-use crate::structs::resources::Resources;
+use crate::{enums::pnw::Color, structs::resources::Resources};
 
 #[derive(Clone, Model, Expose)]
 #[table = "alliances"]
@@ -15,8 +15,9 @@ pub struct Alliance {
     pub name: String,
     pub acronym: Option<String>,
     pub score: BigDecimal,
-    pub color: i16,
+    pub color: Color,
     pub date: OffsetDateTime,
+    #[field("accept_members")]
     pub accepts_members: bool,
     pub flag: Option<String>,
     pub forum_link: Option<String>,

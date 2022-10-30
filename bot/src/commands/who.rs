@@ -1,11 +1,6 @@
-use bigdecimal::BigDecimal;
 use poise::serenity_prelude as serenity;
-use std::str::FromStr;
-use time::OffsetDateTime;
 
 use crate::embeds;
-use crate::structs::Nation;
-use crate::traits::Model;
 use crate::types::Command;
 use crate::types::{Context, Error};
 
@@ -14,9 +9,8 @@ async fn who(
     ctx: Context<'_>,
     #[description = "Selected user"] user: Option<serenity::User>,
 ) -> Result<(), Error> {
-    let nation_id: u64;
     let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    nation_id = u.id.0;
+    let nation_id = u.id.0;
     let gotten_user = ctx.data().cache.get_user(&(nation_id as i64));
 
     match gotten_user {

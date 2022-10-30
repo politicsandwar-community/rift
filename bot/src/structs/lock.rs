@@ -26,27 +26,18 @@ where
     where
         T: std::hash::Hash + Eq + Copy + Send + Sync + 'static,
     {
-        {
-            if self.locks.lock().unwrap().get(&key).is_none() {
-                if let Some(lock) = self.unused_locks.lock().unwrap().pop_front() {
-                    self.locks
-                        .lock()
-                        .unwrap()
-                        .entry(key)
-                        .and_modify(|f| *f = lock);
-                } else {
-                    let lock = Lock::new(Arc::new(self.clone()));
-                    self.locks
-                        .lock()
-                        .unwrap()
-                        .entry(key)
-                        .and_modify(|f| *f = lock);
-                }
-            }
-        }
         let lock = {
-            let lock = self.locks.lock().unwrap();
-            lock.get(&key).unwrap().clone()
+            let mut locks = self.locks.lock().unwrap();
+            if let Some(l) = locks.get(&key) {
+                l.clone()
+            } else if let Some(lock) = self.unused_locks.lock().unwrap().pop_front() {
+                locks.entry(key).and_modify(|f| *f = lock.clone());
+                lock.clone()
+            } else {
+                let lock = Lock::new(Arc::new(self.clone()));
+                locks.entry(key).and_modify(|f| *f = lock.clone());
+                lock.clone()
+            }
         };
         lock.lock(key).await
     }
