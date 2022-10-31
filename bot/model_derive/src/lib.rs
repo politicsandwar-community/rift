@@ -86,30 +86,36 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     )
     .unwrap();
     let mut no_type_check_columns: Vec<String> = vec![];
-    let columns: Vec<String> = data
-        .fields
-        .iter()
-        .filter(|field| !field.attrs.iter().any(|attr| attr.path.is_ident("no_save")))
-        .map(|field| {
-            let no_type_check = field
-                .attrs
-                .iter()
-                .any(|attr| attr.path.is_ident("no_type_check"));
-            let column = field
-                .ident
-                .as_ref()
-                .expect("fields must have an identifier")
-                .to_string();
-            if no_type_check {
-                no_type_check_columns.push(column.clone());
-            }
-            column
-        })
+    let insert_columns: Vec<String> =
+        data.fields
+            .iter()
+            .filter(|field| {
+                !field.attrs.iter().any(|attr| {
+                    attr.path.is_ident("no_save") || attr.path.is_ident("auto_increment")
+                })
+            })
+            .map(|field| {
+                let no_type_check = field
+                    .attrs
+                    .iter()
+                    .any(|attr| attr.path.is_ident("no_type_check"));
+                let column = field
+                    .ident
+                    .as_ref()
+                    .expect("fields must have an identifier")
+                    .to_string();
+                if no_type_check {
+                    no_type_check_columns.push(column.clone());
+                }
+                column
+            })
+            .collect();
+    let insert_names = insert_columns.join(", ");
+    let insert_values: Vec<String> = (0..insert_columns.len())
+        .map(|i| format!("${}", i + 1))
         .collect();
-    let insert_names = columns.join(", ");
-    let insert_values: Vec<String> = (0..columns.len()).map(|i| format!("${}", i + 1)).collect();
     let insert_values = insert_values.join(", ");
-    let returning_names = columns
+    let returning_names = insert_columns
         .iter()
         .map(|c| {
             if no_type_check_columns.contains(c) {
@@ -131,7 +137,27 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     )
     .unwrap();
 
-    let update_names = Iterator::enumerate(columns.iter())
+    let update_columns: Vec<String> = data
+        .fields
+        .iter()
+        .filter(|field| !field.attrs.iter().any(|attr| attr.path.is_ident("no_save")))
+        .map(|field| {
+            let no_type_check = field
+                .attrs
+                .iter()
+                .any(|attr| attr.path.is_ident("no_type_check"));
+            let column = field
+                .ident
+                .as_ref()
+                .expect("fields must have an identifier")
+                .to_string();
+            if no_type_check {
+                no_type_check_columns.push(column.clone());
+            }
+            column
+        })
+        .collect();
+    let update_names = Iterator::enumerate(update_columns.iter())
         .map(|(i, column)| format!("{} = ${}", column, i + 1))
         .collect::<Vec<String>>()
         .join(", ");
@@ -141,7 +167,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             format!(
                 "{} = ${}",
                 key,
-                columns
+                update_columns
                     .iter()
                     .position(|c| c == key)
                     .unwrap_or_else(|| panic!("primary key {} not present in struct", key))
@@ -151,11 +177,14 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .collect::<Vec<String>>()
         .join(" AND ");
     let update_statement = format!("UPDATE {table} SET {update_names} WHERE {update_where};");
-    let struct_values = columns
+    let insert_values = insert_columns
         .iter()
         .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
         .collect::<Vec<syn::Expr>>();
-
+    let update_values = update_columns
+        .iter()
+        .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
+        .collect::<Vec<syn::Expr>>();
     let select_query = format!("SELECT * FROM {table};");
 
     let mut delete_where = Vec::new();
@@ -165,9 +194,8 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         where_counter += 1;
     }
     let delete_where = delete_where.join(" AND ");
-    let delete_values = columns
+    let delete_values = primary_keys
         .iter()
-        .filter(|f| primary_keys.contains(f))
         .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
         .collect::<Vec<syn::Expr>>();
     let delete_query = format!("DELETE FROM {table} WHERE {delete_where};");
@@ -289,7 +317,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                         tokio::spawn(async move {
                             let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
                             if let Some(mut value) = value {
-                                // let mut value = value.lock();
+                                let _lock = value.lock(&data).await;
                                 value.update_from_object(obj);
                                 if let Err(e) = value.save(&data, false).await {
                                     panic!("error saving object: {}", e);
@@ -312,7 +340,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                         tokio::spawn(async move {
                             let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
                             if let Some(mut value) = value {
-                                value.lock(&data).await;
+                                let _lock = value.lock(&data).await;
                                 value.update_from_object(obj);
                                 if let Err(e) = value.save(&data, false).await {
                                     panic!("error saving object: {}", e);
@@ -335,7 +363,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                         tokio::spawn(async move {
                             let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
                             if let Some(mut value) = value {
-                                value.lock(&data).await;
+                                let _lock = value.lock(&data).await;
                                 if let Err(e) = value.delete(&data).await {
                                     panic!("error deleting   object: {}", e);
                                 }
@@ -366,14 +394,14 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
 
             async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
                 if (insert) {
-                    let result = sqlx::#query_func!(Self, #insert_statement, #(#struct_values),*)
+                    let result = sqlx::#query_func!(Self, #insert_statement, #(#insert_values),*)
                         .fetch_one(data.pool.as_ref())
                         .await?;
                     data.cache.#insert_cache_name(self.#cache_id, self.clone());
                     self.clone_from(&result);
                 } else {
-                    sqlx::#query_func!(Self, #update_statement, #(#struct_values),*)
-                        .fetch_one(data.pool.as_ref())
+                    sqlx::#query_func!(Self, #update_statement, #(#update_values),*)
+                        .execute(data.pool.as_ref())
                         .await?;
                     data.cache.#update_cache_name(&self.#cache_id, &self);
                 }

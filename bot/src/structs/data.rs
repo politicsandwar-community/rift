@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use sqlx::postgres::PgPoolOptions;
 
@@ -24,6 +24,17 @@ impl Data {
                 .set_api_key(std::env::var("API_KEY").expect("API_KEY must be set"))
                 .to_kit(),
         );
+
+        let _lock = cache.lock_nation(&251584).await;
+        // drop(_lock);
+        let timeout = tokio::time::timeout(Duration::from_secs(5), async {
+            cache.lock_nation(&251584).await
+        })
+        .await;
+        match timeout {
+            Ok(_) => panic!("locked!"),
+            Err(_) => panic!("didn't lock!"),
+        }
 
         let data = Data { pool, cache, kit };
 
