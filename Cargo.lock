@@ -918,9 +918,9 @@ checksum = "c4a1e36c821dbe04574f602848a19f742f4fb3c98d40449f11bcad18d6b17421"
 
 [[package]]
 name = "hyper"
-version = "0.14.20"
+version = "0.14.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02c929dc5c39e335a03c405292728118860721b10190d98c2a0f0efd5baafbac"
+checksum = "abfba89e19b959ca163c7752ba59d737c1ceea53a5d31a149c805446fc958064"
 dependencies = [
  "bytes",
  "futures-channel",
@@ -1478,9 +1478,9 @@ dependencies = [
 
 [[package]]
 name = "pnwkit-core"
-version = "0.1.0-alpha.12"
+version = "0.1.0-alpha.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e95d4304c93d0c8cc337f5da0029320053a8b50802d82c224a159eaf28be94d6"
+checksum = "847d66cd459f4cbe2b78a671ba10b86f46a51cc02c9bfeb2cce34b3a37141255"
 dependencies = [
  "async-trait",
  "bigdecimal",
