@@ -25,17 +25,6 @@ impl Data {
                 .to_kit(),
         );
 
-        let _lock = cache.lock_nation(&251584).await;
-        // drop(_lock);
-        let timeout = tokio::time::timeout(Duration::from_secs(5), async {
-            cache.lock_nation(&251584).await
-        })
-        .await;
-        match timeout {
-            Ok(_) => panic!("locked!"),
-            Err(_) => panic!("didn't lock!"),
-        }
-
         let data = Data { pool, cache, kit };
 
         data.cache.start_subscriptions(&data);
