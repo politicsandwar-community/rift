@@ -7,6 +7,9 @@ use crate::types::{Context, Error};
 
 #[poise::command(slash_command, prefix_command)]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 78696f8 (wot?)
 async fn who(ctx: Context<'_>, #[description = "Selected user"] input: i32) -> Result<(), Error> {
     //let u = user.as_ref().unwrap_or_else(|| ctx.author());
     //let gotten_user = ctx.data().cache.get_user(&(u.id.0 as i64));
@@ -16,6 +19,7 @@ async fn who(ctx: Context<'_>, #[description = "Selected user"] input: i32) -> R
         Some(n) => {
             ctx.send(|f| f.embed(crate::embeds::pnw::nation(&ctx, &n)))
                 .await?;
+<<<<<<< HEAD
 =======
 async fn who(
     ctx: Context<'_>,
@@ -40,6 +44,8 @@ async fn who(
                 },
             }
 >>>>>>> e86fd12 (Add back testing data)
+=======
+>>>>>>> 78696f8 (wot?)
         },
         None => {
             ctx.send(|f| f.embed(embeds::core::error(&ctx, "Nation Not Found")))
