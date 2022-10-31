@@ -15,7 +15,7 @@ pub struct Nation {
     pub id: i32,
     pub alliance_id: i32,
     pub alliance_position: AlliancePosition,
-    #[field("leader_name")]
+    #[field("nation_name")]
     pub name: String,
     #[field("leader_name")]
     pub leader: String,
