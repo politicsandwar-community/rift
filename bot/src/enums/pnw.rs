@@ -1,5 +1,6 @@
 use enum_derive::Enum;
 use pnwkit::Value;
+use poise::serenity_prelude as serenity;
 use strum_macros::Display;
 
 #[derive(Clone, Display, Enum, sqlx::Type)]
