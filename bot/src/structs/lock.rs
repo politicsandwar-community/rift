@@ -101,7 +101,6 @@ where
     T: std::hash::Hash + Eq + Copy + Send + Sync + 'static,
 {
     fn drop(&mut self) {
-        println!("drop");
         {
             let locks = self.store.locks.lock().unwrap();
             let lock = locks.get(&self.key).unwrap();
@@ -109,7 +108,6 @@ where
             if let Some(w) = waiters.checked_sub(1) {
                 *waiters = w;
             }
-            println!("waiters {}", waiters);
             if *waiters > 0 {
                 lock.semaphore.add_permits(1);
                 return;
