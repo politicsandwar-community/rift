@@ -442,6 +442,20 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 data.cache.#lock_cache_name(&self.#cache_id).await
             }
         }
+
+        impl std::hash::Hash for #name {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                self.#cache_id.hash(state);
+            }
+        }
+
+        impl std::cmp::PartialEq for #name {
+            fn eq(&self, other: &Self) -> bool {
+                self.#cache_id == other.#cache_id
+            }
+        }
+
+        impl std::cmp::Eq for #name {}
     };
     gen.into()
 }

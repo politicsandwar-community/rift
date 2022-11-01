@@ -63,6 +63,23 @@ macro_rules! cache {
                     pub async fn [<lock_ $name>](&self, key: &<crate::structs::$type as Model>::Key) -> crate::structs::LockGuard<<crate::structs::$type as Model>::Key> {
                         self.$store.lock(*key).await
                     }
+
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub async fn [<filter_ $plural>](&self, f: impl Fn(&crate::structs::$type) -> bool) -> dashmap::DashSet<crate::structs::$type> {
+                        self.$plural.iter().filter(|v| f(v.value())).map(|v| v.clone()).collect::<dashmap::DashSet<crate::structs::$type>>()
+                    }
+
+                    #[allow(dead_code)]
+                    #[inline(always)]
+                    pub async fn [<find_one_ $name>](&self, f: impl Fn(&crate::structs::$type) -> bool) -> Option<crate::structs::$type> {
+                        let res = self.$plural.iter().filter(|v| f(v.value())).collect::<Vec<_>>();
+                        if res.len() == 1 {
+                            Some(res.into_iter().next().unwrap().clone())
+                        } else {
+                            None
+                        }
+                    }
                 )*
             }
         }
