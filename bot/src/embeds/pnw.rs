@@ -1,7 +1,64 @@
 use poise::serenity_prelude::CreateEmbed;
 use url::Url;
 
-use crate::{consts, strings::pnw, structs::Nation, types::Context};
+use crate::{
+    consts,
+    strings::pnw,
+    structs::{Alliance, Nation},
+    types::Context,
+};
+
+pub fn alliance<'a>(
+    ctx: &'a Context,
+    alliance: &'a Alliance,
+) -> Box<dyn Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a> {
+    let user = ctx.author();
+    Box::new(move |e: &mut CreateEmbed| {
+        e.author(crate::utils::embed_author(
+            user.name.clone(),
+            if let Some(url) = user.avatar_url() {
+                url
+            } else {
+                user.default_avatar_url()
+            },
+        ))
+        .colour(consts::embed::INFO_EMBED_COLOUR)
+        .thumbnail(alliance.flag.as_ref().unwrap_or(&"https://politicsandwar.com/uploads/33e0b12e9a0b4a535fc23bea764bcdd0b9f1f158513.png".to_string()))
+        .description(pnw::link(
+            "Alliance Page".to_string(),
+            format!("https://politicsandwar.com/alliance/id={}", alliance.id),
+        ))
+        .fields([
+            ("Alliance ID", format!("{}", alliance.id), true),
+            ("Name", alliance.name.to_string(), true),
+            (
+                "Achronym",
+                alliance
+                    .acronym
+                    .as_ref()
+                    .unwrap_or(&"None".to_string())
+                    .to_string(),
+                true,
+            ),
+            ("Colour", alliance.color.to_string(), true),
+            ("Rank", "Not Implimented".to_string(), true),
+            ("Members", pnw::link("Not Implimented".to_string(),format!("https://politicsandwar.com/index.php?id=15&keyword={}&cat=alliance&ob=score&od=DESC&maximum=50&minimum=0&search=Go&memberview=true",alliance.name) ),true),
+            ("Score", alliance.score.to_string(),true),
+            ("Average Score", "Not Implimented".to_string(),true),
+            ("Applicants", "Not Implimented".to_string(),true),
+            ("Leaders", "Not Implimented".to_string(),true),
+            ("Heirs", "Not Implimented".to_string(),true),
+            ("Officers", "Not Implimented".to_string(),true),
+            ("Fourm Link",pnw::link("Click Here".to_string(),alliance.forum_link.as_ref().unwrap_or(&"None".to_string()).to_string()),true), 
+            ("Dicord Link",pnw::link("Click Here".to_string(),alliance.discord_link.as_ref().unwrap_or(&"None".to_string()).to_string()),true), 
+            ("Vacation Mode","Not Implimented".to_string(),true),
+            ("Average Cities","Not Implimented".to_string(),true),
+            ("Average Infrastructure","Not Implimented".to_string(),true),
+            ("Treasures","Not Implimented".to_string(),true),
+
+        ])
+    })
+}
 
 pub fn nation<'a>(
     ctx: &'a Context,
