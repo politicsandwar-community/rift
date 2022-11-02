@@ -18,7 +18,7 @@ pub fn alliance<'a>(
     let nations = ctx
         .data()
         .cache
-        .filter_nations(|a| a.alliance_id == alliance.id);
+        .find_many_nations(|a| a.alliance_id == alliance.id);
     Box::new(move |e: &mut CreateEmbed| {
         e.author(crate::utils::embed_author(
             user.name.clone(),
