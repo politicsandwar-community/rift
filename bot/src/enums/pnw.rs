@@ -3,7 +3,7 @@ use pnwkit::Value;
 use poise::serenity_prelude as serenity;
 use strum_macros::Display;
 
-#[derive(Clone, Display, Enum, sqlx::Type)]
+#[derive(Clone, Display, Enum, sqlx::Type, PartialEq)]
 #[repr(i16)]
 pub enum AlliancePosition {
     NoAlliance = 0,

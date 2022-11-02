@@ -1,3 +1,4 @@
+use ::serenity::FutureExt;
 use poise::serenity_prelude as serenity;
 
 use crate::embeds;
@@ -14,6 +15,7 @@ async fn who(
     //let gotten_user = ctx.data().cache.get_user(&(u.id.0 as i64));
 
     let n = ctx.data().cache.get_alliance(&search);
+
     match n {
         Some(n) => {
             ctx.send(|f| f.embed(embeds::pnw::alliance(&ctx, &n)))
