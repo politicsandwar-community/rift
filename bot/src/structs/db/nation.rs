@@ -7,7 +7,7 @@ use crate::{
     structs::resources::Resources,
 };
 
-#[derive(Clone, Model)]
+#[derive(Clone, Debug, Model)]
 #[table = "nations"]
 #[cache_name = "nation"]
 #[subscriptions = "Nation"]

@@ -5,7 +5,7 @@ use time::OffsetDateTime;
 
 use crate::{enums::pnw::Color, structs::resources::Resources};
 
-#[derive(Clone, Model, Expose)]
+#[derive(Clone, Debug, Model, Expose)]
 #[table = "alliances"]
 #[cache_name = "alliance"]
 #[subscriptions = "Alliance"]

@@ -4,7 +4,7 @@ use sqlx::postgres::PgPoolOptions;
 
 use crate::traits::Model;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Data {
     pub pool: Arc<sqlx::PgPool>,
     pub cache: Arc<super::Cache>,
