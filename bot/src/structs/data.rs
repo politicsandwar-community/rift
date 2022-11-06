@@ -2,6 +2,8 @@ use std::sync::Arc;
 
 use sqlx::postgres::PgPoolOptions;
 
+use crate::traits::Model;
+
 #[derive(Clone)]
 pub struct Data {
     pub pool: Arc<sqlx::PgPool>,
@@ -28,6 +30,34 @@ impl Data {
         let data = Data { pool, cache, kit };
 
         data.cache.start_subscriptions(&data);
+
+        let d = data.clone();
+        tokio::spawn(async move {
+            let sub = d
+                .kit
+                .subscribe(
+                    pnwkit::SubscriptionModel::Nation,
+                    pnwkit::SubscriptionEvent::Update,
+                )
+                .await
+                .expect("subscription failed");
+            while let Some(obj) = sub.next().await {
+                let data = d.clone();
+                tokio::spawn(async move {
+                    let value = data
+                        .cache
+                        .get_nation(&obj.get("id").unwrap().value().as_i32().unwrap());
+                    if let Some(mut value) = value {
+                        let _lock = value.lock(&data).await;
+                        value.last_active = obj.get("last_active").unwrap().value().into();
+                        value.discord_id = obj.get("discord_id").unwrap().value().into();
+                        if let Err(e) = value.save(&data, false).await {
+                            panic!("error saving object: {}", e);
+                        }
+                    }
+                });
+            }
+        });
 
         data
     }
