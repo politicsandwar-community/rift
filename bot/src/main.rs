@@ -32,7 +32,9 @@ async fn main() {
                 case_insensitive_commands: true,
                 ..Default::default()
             },
-            listener: listener::listener,
+            listener: |ctx, event, framework, data| {
+                Box::pin(listener::listener(ctx, event, framework, data))
+            },
             ..Default::default()
         })
         .token(std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN"))
