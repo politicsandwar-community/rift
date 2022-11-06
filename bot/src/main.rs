@@ -5,6 +5,7 @@ mod consts;
 mod embeds;
 mod enums;
 mod errors;
+mod listener;
 mod strings;
 mod structs;
 mod traits;
@@ -31,6 +32,7 @@ async fn main() {
                 case_insensitive_commands: true,
                 ..Default::default()
             },
+            listener: listener::listener,
             ..Default::default()
         })
         .token(std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN"))
