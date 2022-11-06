@@ -15,6 +15,7 @@ use syn::Expr;
         cache_unwrap,
         field,
         field_custom,
+        field_no_update,
         subscriptions,
     )
 )]
@@ -224,6 +225,10 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 .attrs
                 .iter()
                 .find(|attr| attr.path.is_ident("field_custom"));
+            let field_no_update = field
+                .attrs
+                .iter()
+                .any(|attr| attr.path.is_ident("field_no_update"));
             let name = field
                 .ident
                 .as_ref()
@@ -254,33 +259,41 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                             format!("o.get(\"{field}\").expect(\"expecting field {field}\").value().into()").as_str()
                         )
                     ),
-                    Some(
-                        syn::parse_str::<Expr>(
-                            format!(
-                                "self.{} = {}",
-                                &name,
-                                field_custom.replace(
-                                    "{get}",
-                                    format!("o.get(\"{field}\").expect(\"expecting field {field}\").value().into()").as_str()
+                    if field_no_update {
+                        None
+                    } else {
+                        Some(
+                            syn::parse_str::<Expr>(
+                                format!(
+                                    "self.{} = {}",
+                                    &name,
+                                    field_custom.replace(
+                                        "{get}",
+                                        format!("o.get(\"{field}\").expect(\"expecting field {field}\").value().into()").as_str()
+                                    )
                                 )
+                                .as_str(),
                             )
-                            .as_str(),
+                            .unwrap()
                         )
-                        .unwrap()
-                    )
+                    }
                 )
             } else {
                 (
                     format!("{name}: o.get(\"{field}\").expect(\"expecting field {field}\").value().into(),"),
-                    Some(
-                        syn::parse_str::<Expr>(
-                            format!(
-                                "self.{name} = o.get(\"{field}\").expect(\"expecting field {field}\").value().into()",
+                    if field_no_update {
+                        None
+                    } else {
+                        Some(
+                            syn::parse_str::<Expr>(
+                                format!(
+                                    "self.{name} = o.get(\"{field}\").expect(\"expecting field {field}\").value().into()",
+                                )
+                                .as_str(),
                             )
-                            .as_str(),
+                            .unwrap()
                         )
-                        .unwrap()
-                    ),
+                    }
                 )
             }
         })
