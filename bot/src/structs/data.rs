@@ -4,7 +4,7 @@ use sqlx::postgres::PgPoolOptions;
 
 use crate::traits::Model;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Data {
     pub pool: Arc<sqlx::PgPool>,
     pub cache: Arc<super::Cache>,
@@ -36,7 +36,7 @@ impl Data {
             let sub = d
                 .kit
                 .subscribe(
-                    pnwkit::SubscriptionModel::Nation,
+                    pnwkit::SubscriptionModel::Account,
                     pnwkit::SubscriptionEvent::Update,
                 )
                 .await

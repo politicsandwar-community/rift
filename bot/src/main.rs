@@ -31,6 +31,7 @@ async fn main() {
                 case_insensitive_commands: true,
                 ..Default::default()
             },
+            on_error: |e| Box::pin(errors::on_error(e)),
             ..Default::default()
         })
         .token(std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN"))

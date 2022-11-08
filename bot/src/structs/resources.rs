@@ -1,7 +1,7 @@
 use bigdecimal::BigDecimal;
 use pnwkit::Object;
 
-#[derive(sqlx::Type, Clone)]
+#[derive(Clone, Debug, sqlx::Type)]
 #[sqlx(type_name = "resources")]
 pub struct Resources {
     pub money: BigDecimal,
