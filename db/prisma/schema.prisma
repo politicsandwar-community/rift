@@ -523,7 +523,7 @@ model nations {
   vacation_mode_turns      Int
   beige_turns              Int
   espionage_available      Boolean
-  // last_active              DateTime                  @db.Timestamptz(6)
+  last_active              DateTime                  @db.Timestamptz(6)
   date                     DateTime                  @db.Timestamptz(6)
   soldiers                 Int
   tanks                    Int
@@ -532,6 +532,7 @@ model nations {
   missiles                 Int
   nukes                    Int
   discord_username         String?
+  discord_id               String?
   turns_since_last_city    Int
   turns_since_last_project Int
   projects                 Int

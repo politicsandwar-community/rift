@@ -29,7 +29,9 @@ pub struct Nation {
     pub vacation_mode_turns: i32,
     pub beige_turns: i32,
     pub espionage_available: bool,
-    // pub last_active: OffsetDateTime,
+    #[field_custom("time::OffsetDateTime::UNIX_EPOCH")]
+    #[field_no_update]
+    pub last_active: OffsetDateTime,
     pub date: OffsetDateTime,
     pub soldiers: i32,
     pub tanks: i32,
@@ -39,6 +41,9 @@ pub struct Nation {
     pub nukes: i32,
     #[field("discord")]
     pub discord_username: Option<String>,
+    #[field_custom("None")]
+    #[field_no_update]
+    pub discord_id: Option<String>,
     pub turns_since_last_city: i32,
     pub turns_since_last_project: i32,
     pub projects: i32,
