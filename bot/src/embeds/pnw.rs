@@ -50,7 +50,7 @@ pub fn alliance<'a>(
             ("Rank", "Not Implimented".to_string(), true),
             ("Members", pnw::link( nations.iter().filter(|a| a.alliance_position != AlliancePosition::Applicant).count().to_string(),format!("https://politicsandwar.com/index.php?id=15&keyword={}&cat=alliance&ob=score&od=DESC&maximum=50&minimum=0&search=Go&memberview=true",alliance.name) ),true),
             ("Score", alliance.score.round(2).to_string(),true),
-            ("Average Score", (&alliance.score/(nations.iter().filter(|a|  a.alliance_position != AlliancePosition::Applicant).count().to_f64().unwrap_or(1.0))).round(2).to_string(),true),
+            ("Average Score", (format!("{:.2}",alliance.score.to_f32().unwrap() / (nations.iter().filter(|n| n.alliance_position != AlliancePosition::Applicant && n.vacation_mode_turns>0) .count() as f32))), true),
             ("Applicants", nations.iter().filter(|a| a.alliance_position == AlliancePosition::Applicant).count().to_string(),true),
             ("Leaders", nations.iter().filter(|a| a.alliance_position == AlliancePosition::Leader).count().to_string(),true),
             ("Fourm Link",pnw::link("Click Here".to_string(),alliance.forum_link.as_ref().unwrap_or(&"None".to_string()).to_string()),true), 
