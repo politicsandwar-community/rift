@@ -32,6 +32,7 @@ async fn main() {
                 case_insensitive_commands: true,
                 ..Default::default()
             },
+            on_error: |e| Box::pin(errors::on_error(e)),
             listener: |ctx, event, framework, data| {
                 Box::pin(listener::listener(ctx, event, framework, data))
             },

@@ -2,7 +2,7 @@ use enum_derive::Enum;
 use pnwkit::Value;
 use strum_macros::Display;
 
-#[derive(Clone, Debug, Display, Enum, sqlx::Type, PartialEq)]
+#[derive(Clone, Debug, Display, Enum, sqlx::Type, Eq, PartialEq)]
 #[repr(i16)]
 pub enum AlliancePosition {
     NoAlliance = 0,

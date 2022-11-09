@@ -36,7 +36,7 @@ impl Data {
             let sub = d
                 .kit
                 .subscribe(
-                    pnwkit::SubscriptionModel::Nation,
+                    pnwkit::SubscriptionModel::Account,
                     pnwkit::SubscriptionEvent::Update,
                 )
                 .await

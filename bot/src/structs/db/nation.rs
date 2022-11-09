@@ -1,10 +1,14 @@
+use async_trait::async_trait;
 use bigdecimal::BigDecimal;
 use model_derive::Model;
 use time::OffsetDateTime;
 
 use crate::{
     enums::pnw::{AlliancePosition, Color, Continent, DomesticPolicy, WarPolicy},
+    errors::NotFoundError,
     structs::resources::Resources,
+    traits::Convert,
+    types::{Context, Error},
 };
 
 #[derive(Clone, Debug, Model)]
@@ -54,4 +58,37 @@ pub struct Nation {
     #[no_type_check]
     #[field_custom("None")]
     pub estimated_resources: Option<Resources>,
+}
+
+#[async_trait]
+impl Convert for Nation {
+    async fn convert_option(ctx: &Context<'_>, val: Option<String>) -> Result<Self, Error> {
+        if let Some(val) = val {
+            let res = val.parse::<i32>();
+            if res.is_err() {
+                return Err(NotFoundError::Nation(Some(val)).into());
+            }
+            let res = res.unwrap();
+            let nation = ctx.data().cache.get_nation(&res);
+            if let Some(nation) = nation {
+                Ok(nation)
+            } else {
+                Err(NotFoundError::Nation(Some(val)).into())
+            }
+        } else {
+            let user_id = ctx.author().id.to_string();
+            let nation = ctx.data().cache.find_exactly_one_nation(|n| {
+                if let Some(discord_id) = &n.discord_id {
+                    discord_id == &user_id
+                } else {
+                    false
+                }
+            });
+            if let Some(nation) = nation {
+                Ok(nation)
+            } else {
+                Err(NotFoundError::Nation(None).into())
+            }
+        }
+    }
 }
