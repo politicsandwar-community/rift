@@ -1,10 +1,12 @@
+use std::fmt::Debug;
+
 use crate::{structs::Data, types::Error};
 use async_trait::async_trait;
 use pnwkit::Object;
 use sqlx::{Pool, Postgres};
 
 #[async_trait]
-pub trait Model: std::clone::Clone {
+pub trait Model: Clone + Debug + Send + Sync + 'static {
     type Key;
     type Map;
 
