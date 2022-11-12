@@ -5,6 +5,7 @@ mod consts;
 mod embeds;
 mod enums;
 mod errors;
+mod listener;
 mod strings;
 mod structs;
 mod traits;
@@ -30,6 +31,10 @@ async fn main() {
                 prefix: Some("~".into()),
                 case_insensitive_commands: true,
                 ..Default::default()
+            },
+            on_error: |e| Box::pin(errors::on_error(e)),
+            listener: |ctx, event, framework, data| {
+                Box::pin(listener::listener(ctx, event, framework, data))
             },
             ..Default::default()
         })

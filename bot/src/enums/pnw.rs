@@ -1,9 +1,8 @@
 use enum_derive::Enum;
 use pnwkit::Value;
-use poise::serenity_prelude as serenity;
 use strum_macros::Display;
 
-#[derive(Clone, Display, Enum, sqlx::Type, PartialEq)]
+#[derive(Clone, Debug, Display, Enum, sqlx::Type, Eq, PartialEq)]
 #[repr(i16)]
 pub enum AlliancePosition {
     NoAlliance = 0,
@@ -39,7 +38,7 @@ impl From<&Value> for AlliancePosition {
     }
 }
 
-#[derive(Clone, Display, Enum, sqlx::Type)]
+#[derive(Clone, Debug, Display, Enum, sqlx::Type)]
 #[repr(i16)]
 pub enum Color {
     Beige = 0,
@@ -105,7 +104,7 @@ impl From<&Value> for Color {
     }
 }
 
-#[derive(Clone, Display, Enum, sqlx::Type)]
+#[derive(Clone, Debug, Display, Enum, sqlx::Type)]
 #[repr(i16)]
 pub enum Continent {
     NorthAmerica = 1,
@@ -143,7 +142,7 @@ impl From<&Value> for Continent {
         }
     }
 }
-#[derive(Clone, Display, Enum, sqlx::Type)]
+#[derive(Clone, Debug, Display, Enum, sqlx::Type)]
 #[repr(i16)]
 pub enum WarPolicy {
     Attrition = 1,
@@ -191,7 +190,7 @@ impl From<&Value> for WarPolicy {
     }
 }
 
-#[derive(Clone, Display, Enum, sqlx::Type)]
+#[derive(Clone, Debug, Display, Enum, sqlx::Type)]
 #[repr(i16)]
 pub enum DomesticPolicy {
     ManifestDestiny = 1,

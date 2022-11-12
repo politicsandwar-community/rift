@@ -1,7 +1,7 @@
 use model_derive::Model;
 use uuid::Uuid;
 
-#[derive(Clone, Model)]
+#[derive(Clone, Debug, Model)]
 #[table = "users"]
 #[primary_key = "user_id"]
 #[cache_name = "user"]

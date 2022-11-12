@@ -3,6 +3,7 @@ use sqlx::{Pool, Postgres};
 
 macro_rules! cache {
     ($($name:ident, $plural:ident, $type:ident, $store:ident)*) => {
+        #[derive(Debug)]
         pub struct Cache {
             $(
                 $plural: <crate::structs::$type as Model>::Map,
