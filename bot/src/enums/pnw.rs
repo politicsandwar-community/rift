@@ -1,6 +1,5 @@
 use enum_derive::Enum;
 use pnwkit::Value;
-use poise::serenity_prelude as serenity;
 use strum_macros::Display;
 
 #[derive(Clone, Display, Enum, sqlx::Type, PartialEq)]
@@ -143,6 +142,7 @@ impl From<&Value> for Continent {
         }
     }
 }
+
 #[derive(Clone, Display, Enum, sqlx::Type)]
 #[repr(i16)]
 pub enum WarPolicy {

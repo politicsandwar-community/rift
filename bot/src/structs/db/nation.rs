@@ -4,13 +4,14 @@ use time::OffsetDateTime;
 
 use crate::{
     enums::pnw::{AlliancePosition, Color, Continent, DomesticPolicy, WarPolicy},
-    structs::resources::Resources,
+    structs::Resources,
 };
 
 #[derive(Clone, Model)]
 #[table = "nations"]
 #[cache_name = "nation"]
 #[subscriptions = "Nation"]
+#[has_pnwkit]
 pub struct Nation {
     pub id: i32,
     pub alliance_id: i32,

@@ -1,7 +1,3 @@
-use bigdecimal::{num_traits::PrimInt, ToPrimitive};
-use poise::serenity_prelude::CreateEmbed;
-use url::Url;
-
 use crate::{
     consts,
     enums::pnw::AlliancePosition,
@@ -9,6 +5,9 @@ use crate::{
     structs::{Alliance, Nation},
     types::Context,
 };
+
+use bigdecimal::ToPrimitive;
+use poise::serenity_prelude::CreateEmbed;
 
 pub fn alliance<'a>(
     ctx: &'a Context<'_>,

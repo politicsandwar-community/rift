@@ -6,6 +6,7 @@ use time::OffsetDateTime;
 #[table = "cities"]
 #[cache_name = "city"]
 #[subscriptions = "City"]
+#[has_pnwkit]
 pub struct City {
     pub id: i32,
     pub nation_id: i32,
