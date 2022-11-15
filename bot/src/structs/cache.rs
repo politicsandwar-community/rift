@@ -104,4 +104,5 @@ cache!(
     city, cities, City, city_locks
     nation, nations, Nation, nation_locks
     user, users, User, user_locks
+    mention, mentions, Mention, mention_locks
 );

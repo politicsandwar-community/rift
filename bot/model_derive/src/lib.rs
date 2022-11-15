@@ -17,6 +17,8 @@ use syn::Expr;
         field_custom,
         field_no_update,
         subscriptions,
+        has_pnwkit,
+        slice,
     )
 )]
 pub fn model_derive(input: TokenStream) -> TokenStream {
@@ -87,6 +89,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     )
     .unwrap();
     let mut no_type_check_columns: Vec<String> = vec![];
+    let mut slice_columns: Vec<String> = vec![];
     let insert_columns: Vec<String> =
         data.fields
             .iter()
@@ -100,6 +103,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                     .attrs
                     .iter()
                     .any(|attr| attr.path.is_ident("no_type_check"));
+                let slice = field.attrs.iter().any(|attr| attr.path.is_ident("slice"));
                 let column = field
                     .ident
                     .as_ref()
@@ -107,6 +111,9 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                     .to_string();
                 if no_type_check {
                     no_type_check_columns.push(column.clone());
+                }
+                if slice {
+                    slice_columns.push(column.clone());
                 }
                 column
             })
@@ -147,6 +154,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 .attrs
                 .iter()
                 .any(|attr| attr.path.is_ident("no_type_check"));
+            let slice = field.attrs.iter().any(|attr| attr.path.is_ident("slice"));
             let column = field
                 .ident
                 .as_ref()
@@ -154,6 +162,9 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 .to_string();
             if no_type_check {
                 no_type_check_columns.push(column.clone());
+            }
+            if slice {
+                slice_columns.push(column.clone());
             }
             column
         })
@@ -180,11 +191,23 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     let update_statement = format!("UPDATE {table} SET {update_names} WHERE {update_where};");
     let insert_values = insert_columns
         .iter()
-        .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
+        .map(|c| {
+            if slice_columns.contains(c) {
+                syn::parse_str(format!("self.{}.as_ref().map(|v| &v[..])", c).as_str()).unwrap()
+            } else {
+                syn::parse_str(format!("self.{}", c).as_str()).unwrap()
+            }
+        })
         .collect::<Vec<syn::Expr>>();
     let update_values = update_columns
         .iter()
-        .map(|column| syn::parse_str(format!("self.{}", column).as_str()).unwrap())
+        .map(|c| {
+            if slice_columns.contains(c) {
+                syn::parse_str(format!("self.{}.as_ref().map(|v| &v[..])", c).as_str()).unwrap()
+            } else {
+                syn::parse_str(format!("self.{}", c).as_str()).unwrap()
+            }
+        })
         .collect::<Vec<syn::Expr>>();
     let select_query = format!("SELECT * FROM {table};");
 
@@ -298,23 +321,41 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             }
         })
         .collect();
-    let create_from_object: Expr = syn::parse_str(
-        format!(
-            "Self {{ {} }}",
-            object_exprs
-                .iter()
-                .map(|(i, _)| i.clone())
-                .collect::<Vec<String>>()
-                .join("\n")
-        )
-        .as_str(),
-    )
-    .unwrap();
-    let update_from_object = object_exprs
+    let create_from_object: Expr = if ast
+        .attrs
         .iter()
-        .filter(|(_, i)| i.is_some())
-        .map(|(_, i)| i.as_ref().unwrap())
-        .collect::<Vec<_>>();
+        .any(|attr| attr.path.is_ident("has_pnwkit"))
+    {
+        let _: Expr = syn::parse_str(
+            format!(
+                "Self {{ {} }}",
+                object_exprs
+                    .iter()
+                    .map(|(i, _)| i.clone())
+                    .collect::<Vec<String>>()
+                    .join("\n")
+            )
+            .as_str(),
+        )
+        .unwrap();
+        syn::parse_str("unimplemented!()").unwrap()
+    } else {
+        syn::parse_str("unimplemented!()").unwrap()
+    };
+    let un: Expr = syn::parse_str("unimplemented!()").unwrap();
+    let update_from_object = if ast
+        .attrs
+        .iter()
+        .any(|attr| attr.path.is_ident("has_pnwkit"))
+    {
+        object_exprs
+            .iter()
+            .filter(|(_, i)| i.is_some())
+            .map(|(_, i)| i.as_ref().unwrap())
+            .collect::<Vec<_>>()
+    } else {
+        vec![&un]
+    };
 
     let subscriptions = if let Some(name) = get_option_attr(ast, "subscriptions") {
         let name: Expr = syn::parse_str(name.as_str()).unwrap();
@@ -407,7 +448,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
 
             async fn save(&mut self, data: &crate::structs::data::Data, insert: bool) -> Result<(), crate::types::Error> {
                 if (insert) {
-                    let result = sqlx::#query_func!(Self, #insert_statement, #(#insert_values),*)
+                    let result = sqlx::#query_func!(#name, #insert_statement, #(#insert_values),*)
                         .fetch_one(data.pool.as_ref())
                         .await?;
                     data.cache.#insert_cache_name(self.#cache_id, self.clone());
@@ -430,7 +471,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             async fn select_all_as_map(pool: &sqlx::Pool<sqlx::Postgres>) -> Self::Map {
-                let res = sqlx::#query_func!(Self, #select_query)
+                let res = sqlx::#query_func!(#name, #select_query)
                     .fetch_all(pool)
                     .await
                     .unwrap();
@@ -470,5 +511,6 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
 
         impl std::cmp::Eq for #name {}
     };
+    // panic!("{}", gen.to_string());
     gen.into()
 }

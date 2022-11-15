@@ -16,6 +16,7 @@ use crate::{
 #[table = "alliances"]
 #[cache_name = "alliance"]
 #[subscriptions = "Alliance"]
+#[has_pnwkit]
 pub struct Alliance {
     #[expose]
     pub id: i32,
