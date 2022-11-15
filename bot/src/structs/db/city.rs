@@ -2,7 +2,7 @@ use bigdecimal::BigDecimal;
 use model_derive::Model;
 use time::OffsetDateTime;
 
-#[derive(Clone, Model)]
+#[derive(Clone, Debug, Model)]
 #[table = "cities"]
 #[cache_name = "city"]
 #[subscriptions = "City"]
