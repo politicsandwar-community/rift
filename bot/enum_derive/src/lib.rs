@@ -13,7 +13,7 @@ fn impl_enum_derive(ast: &syn::DeriveInput) -> TokenStream {
         syn::Data::Enum(data) => &data.variants,
         _ => panic!("Enum can only be derived on enums"),
     };
-    let variants = values.iter().map(|v| {
+    let from_variants = values.iter().map(|v| {
         let ident = &v.ident;
         let discriminant = match &v.discriminant {
             Some((_, expr)) => expr,
@@ -23,12 +23,28 @@ fn impl_enum_derive(ast: &syn::DeriveInput) -> TokenStream {
             #discriminant => Some(Box::new(#name::#ident)),
         }
     });
+    let to_variants = values.iter().map(|v| {
+        let ident = &v.ident;
+        let discriminant = match &v.discriminant {
+            Some((_, expr)) => expr,
+            None => panic!("Enum discriminant must be specified"),
+        };
+        quote! {
+            #name::#ident => #discriminant,
+        }
+    });
     let gen = quote! {
         impl crate::traits::Enum for #name {
             fn from_i16(value: i16) -> Option<Box<Self>> {
                 match value {
-                    #( #variants )*
+                    #( #from_variants )*
                     _ => None,
+                }
+            }
+
+            fn to_i16(&self) -> i16 {
+                match self {
+                    #( #to_variants )*
                 }
             }
         }

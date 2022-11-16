@@ -5,8 +5,8 @@ use time::OffsetDateTime;
 
 use crate::{
     enums::pnw::{AlliancePosition, Color, Continent, DomesticPolicy, WarPolicy},
-    structs::Resources,
     errors::NotFoundError,
+    structs::Resources,
     traits::Convert,
     types::{Context, Error},
 };
