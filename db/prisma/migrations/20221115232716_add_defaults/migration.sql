@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "mentions" ALTER COLUMN "channel_ids" SET DEFAULT ARRAY[]::BIGINT[],
+ALTER COLUMN "role_ids" SET DEFAULT ARRAY[]::BIGINT[],
+ALTER COLUMN "user_ids" SET DEFAULT ARRAY[]::BIGINT[];

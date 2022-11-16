@@ -142,6 +142,7 @@ impl From<&Value> for Continent {
         }
     }
 }
+
 #[derive(Clone, Debug, Display, Enum, sqlx::Type)]
 #[repr(i16)]
 pub enum WarPolicy {

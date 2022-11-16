@@ -460,10 +460,10 @@ model interviews {
 model mentions {
   id          Int      @default(autoincrement())
   owner_id    BigInt?
-  owner_type  Int?     @db.SmallInt
-  channel_ids BigInt[]
-  role_ids    BigInt[]
-  user_ids    BigInt[]
+  owner_type  Int      @db.SmallInt
+  channel_ids BigInt[] @default([])
+  role_ids    BigInt[] @default([])
+  user_ids    BigInt[] @default([])
 
   @@ignore
 }
