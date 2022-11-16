@@ -13,11 +13,18 @@ pub fn alliance<'a>(
     ctx: &'a Context<'_>,
     alliance: &'a Alliance,
 ) -> impl Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a {
+    let infra = 0;
     let user = ctx.author();
     let nations = ctx
         .data()
         .cache
         .find_many_nations(|a| a.alliance_id == alliance.id);
+    let cities = ctx
+        .data()
+        .cache
+        .find_many_cities(|a| a.alliance_id == alliance.id);
+
+    cities.iter().for_each(|x| infra += x.infrastructure);
     move |e: &mut CreateEmbed| {
         e.author(crate::utils::embed_author(
             user.name.clone(),
@@ -55,8 +62,8 @@ pub fn alliance<'a>(
             ("Fourm Link",strings::link("Click Here".to_string(),alliance.forum_link.as_ref().unwrap_or(&"None".to_string()).to_string()),true), 
             ("Dicord Link",strings::link("Click Here".to_string(),alliance.discord_link.as_ref().unwrap_or(&"None".to_string()).to_string()),true), 
             ("Vacation Mode",nations.iter().filter(|a| a.vacation_mode_turns > 0 && a.alliance_position != AlliancePosition::Applicant).count().to_string(),true),
-            ("Average Cities","Not Implimented".to_string(),true),
-            ("Average Infrastructure","Not Implimented".to_string(),true),
+            ("Average Cities",(cities.iter().count()/nations.iter().count()).to_string(),true),
+            ("Average Infrastructure", (infra/cities.iter().count()).to_string() ,true),
             ("Treasures","Not Implimented".to_string(),true),
 
         ])
@@ -97,8 +104,7 @@ pub fn nation<'a>(
                     format!(
                         "{}{}",
                         "https://politicsandwar.com/alliance/id=", nation.alliance_id
-                    ))
-                    .expect("somtinbroke")
+                    ),
                 ),
                 true,
             ),

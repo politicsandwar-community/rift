@@ -8,9 +8,6 @@ async fn who(
     ctx: Context<'_>,
     #[description = "Search for a nation or alliance"] search: String,
 ) -> Result<(), Error> {
-    //let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    //let gotten_user = ctx.data().cache.get_user(&(u.id.0 as i64));
-
     convert!(ctx, search = Alliance);
 
     ctx.send(|f| f.embed(embeds::alliance(&ctx, &search)))
