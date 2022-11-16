@@ -326,7 +326,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .iter()
         .any(|attr| attr.path.is_ident("has_pnwkit"))
     {
-        let _: Expr = syn::parse_str(
+        syn::parse_str(
             format!(
                 "Self {{ {} }}",
                 object_exprs
@@ -337,8 +337,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             )
             .as_str(),
         )
-        .unwrap();
-        syn::parse_str("unimplemented!()").unwrap()
+        .unwrap()
     } else {
         syn::parse_str("unimplemented!()").unwrap()
     };
