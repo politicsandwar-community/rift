@@ -2,7 +2,7 @@ pub use model_derive::Model;
 
 use crate::enums::mention::MentionOwnerType;
 
-#[derive(Clone, Model)]
+#[derive(Clone, Debug, Model)]
 #[table = "mentions"]
 #[cache_name = "mention"]
 pub struct Mention {
