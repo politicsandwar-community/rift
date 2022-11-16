@@ -6,25 +6,33 @@ use crate::{
     types::Context,
 };
 
-use bigdecimal::ToPrimitive;
+use bigdecimal::{BigDecimal, FromPrimitive, ToPrimitive};
 use poise::serenity_prelude::CreateEmbed;
 
 pub fn alliance<'a>(
     ctx: &'a Context<'_>,
     alliance: &'a Alliance,
 ) -> impl Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a {
-    let infra = 0;
+    let mut infra = 0.0;
+
     let user = ctx.author();
+
     let nations = ctx
         .data()
         .cache
         .find_many_nations(|a| a.alliance_id == alliance.id);
-    let cities = ctx
-        .data()
-        .cache
-        .find_many_cities(|a| a.alliance_id == alliance.id);
+    let cities = ctx.data().cache.find_many_cities(|a| {
+        nations.contains(
+            &ctx.data()
+                .cache
+                .find_exactly_one_nation(|n| n.id == a.nation_id)
+                .unwrap(),
+        )
+    });
 
-    cities.iter().for_each(|x| infra += x.infrastructure);
+    cities
+        .iter()
+        .for_each(|x| infra += x.infrastructure.to_f32().unwrap());
     move |e: &mut CreateEmbed| {
         e.author(crate::utils::embed_author(
             user.name.clone(),
@@ -53,7 +61,7 @@ pub fn alliance<'a>(
                 true,
             ),
             ("Colour", alliance.color.to_string(), true),
-            ("Rank", "Not Implimented".to_string(), true),
+            ("Rank", format!("#{}", ctx.data().cache.find_many_alliances(|a| a.score > alliance.score ).iter().count()), true),
             ("Members", strings::link( nations.iter().filter(|a| a.alliance_position != AlliancePosition::Applicant).count().to_string(),format!("https://politicsandwar.com/index.php?id=15&keyword={}&cat=alliance&ob=score&od=DESC&maximum=50&minimum=0&search=Go&memberview=true",alliance.name) ),true),
             ("Score", alliance.score.round(2).to_string(),true),
             ("Average Score", (format!("{:.2}",alliance.score.to_f32().unwrap() / (nations.iter().filter(|n| n.alliance_position != AlliancePosition::Applicant && n.vacation_mode_turns>0) .count() as f32))), true),
@@ -63,7 +71,7 @@ pub fn alliance<'a>(
             ("Dicord Link",strings::link("Click Here".to_string(),alliance.discord_link.as_ref().unwrap_or(&"None".to_string()).to_string()),true), 
             ("Vacation Mode",nations.iter().filter(|a| a.vacation_mode_turns > 0 && a.alliance_position != AlliancePosition::Applicant).count().to_string(),true),
             ("Average Cities",(cities.iter().count()/nations.iter().count()).to_string(),true),
-            ("Average Infrastructure", (infra/cities.iter().count()).to_string() ,true),
+            ("Average Infrastructure", (infra/ cities.iter().count().to_f32().unwrap()).to_string() ,true),
             ("Treasures","Not Implimented".to_string(),true),
 
         ])
@@ -75,6 +83,17 @@ pub fn nation<'a>(
     nation: &'a Nation,
 ) -> impl Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a {
     let user = ctx.author();
+
+    let cities = ctx
+        .data()
+        .cache
+        .find_many_cities(|a| a.nation_id == nation.id);
+    let mut infra = 0.0;
+    let mut land = 0.0;
+    cities.iter().for_each(|x| {
+        infra += x.infrastructure.to_f32().unwrap();
+        land += x.land.to_f32().unwrap()
+    });
     move |e: &mut CreateEmbed| {
         e.author(crate::utils::embed_author(
             user.name.clone(),
@@ -170,10 +189,14 @@ pub fn nation<'a>(
             ("Nukes", format!("{}", nation.nukes), true),
             (
                 "Average Infrastructure",
-                "Not Implimented".to_string(),
+                (infra / nation.num_cities.to_f32().unwrap()).to_string(),
                 true,
             ),
-            ("Average Land", "Not Implimented".to_string(), true),
+            (
+                "Average Land",
+                (land / nation.num_cities.to_f32().unwrap()).to_string(),
+                true,
+            ),
             (
                 "Offensive Wars",
                 strings::link(
