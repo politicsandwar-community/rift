@@ -20,17 +20,28 @@ use crate::{
 pub struct Alliance {
     #[expose]
     pub id: i32,
+    #[expose]
     pub name: String,
+    #[expose]
     pub acronym: Option<String>,
+    #[expose]
     pub score: BigDecimal,
+    // #[expose] // TODO: implement enums in lang
     pub color: Color,
+    // #[expose] // TODO: implement time in lang
     pub date: OffsetDateTime,
+    #[expose]
     #[field("accept_members")]
     pub accepts_members: bool,
+    #[expose]
     pub flag: Option<String>,
+    #[expose]
     pub forum_link: Option<String>,
+    #[expose]
     pub discord_link: Option<String>,
+    #[expose]
     pub wiki_link: Option<String>,
+    #[expose]
     #[no_type_check]
     #[field_custom("None")]
     pub estimated_resources: Option<Resources>,

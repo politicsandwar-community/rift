@@ -10,6 +10,7 @@ pub enum CompileError {
 pub enum RuntimeError {
     VariableNotFound(String),
     AttributeNotFound(String),
+    StaticAttributeNotFound(String),
     NotIndexable(Value),
     IndexOutOfBounds(i64),
     NotCallable(Value),

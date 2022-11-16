@@ -21,9 +21,9 @@ regex = "1"
 lazy_static = "1.4"
 const_format = "0.2.30"
 
-enum_derive = { path = "enum_derive" }
 model_derive = { path = "model_derive" }
 lang = { path = "lang" }
+enum_derive = { path = "lang/enum_derive" }
 expose_derive = { path = "lang/expose_derive" }
 
 [dependencies.serenity]

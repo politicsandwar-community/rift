@@ -26,6 +26,7 @@ UnaryExpr = {
 
 Member: Ast = {
     <left:Primary> "." <right:Ident> => Ast::Ident(Some(Box::new(left)), right),
+    <left:Primary> "::" <right:Ident> => Ast::Static(Some(Box::new(left)), right),
     <left:Primary> "[" <right:Expression> "]" => Ast::Index(Box::new(left), Box::new(right)),
 
     Primary,
@@ -82,6 +83,7 @@ Value: Value = {
     r#""([^"\\]|\\.)*""# => Value::String(<>.to_string()),
     "true" => Value::Bool(true),
     "false" => Value::Bool(false),
+    "None" => Value::None,
 }
 
 

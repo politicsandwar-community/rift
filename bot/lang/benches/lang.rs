@@ -45,7 +45,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             let ctx = Context::default();
             ctx.insert_value("test".into(), 1.into());
             ctx.insert_value("func".into(), Func::new(|_, _| Ok(1.into())).into());
-            b.iter(|| program.execute(&ctx))
+            b.iter(|| program.execute(&ctx));
         });
     }
 }

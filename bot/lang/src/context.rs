@@ -10,6 +10,7 @@ impl Context {
         self.values.insert(key, value);
     }
 }
+
 impl Default for Context {
     fn default() -> Self {
         Context {

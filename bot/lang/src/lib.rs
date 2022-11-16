@@ -7,15 +7,29 @@ mod error;
 mod impls;
 mod program;
 
-pub use crate::ast::{Ast, ExposeVar, Func, LangIndexVar, Value, ValueResult, Var};
+use std::fmt::Debug;
+
+pub use crate::ast::{Ast, Func, LangIndexVar, Value, ValueResult, Var};
 pub use crate::context::Context;
 pub use crate::error::{CompileError, RuntimeError, TypeError};
 pub use crate::program::Program;
 
 lalrpop_mod!(lang);
 
-pub trait Expose {
-    fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult;
+pub trait Expose: Debug {
+    fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
+        Err(RuntimeError::AttributeNotFound(ident.to_string()))
+    }
+
+    fn get_static_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
+        Err(RuntimeError::AttributeNotFound(ident.to_string()))
+    }
+}
+
+pub trait Enum {
+    fn from_i16(value: i16) -> Option<Box<Self>>;
+
+    fn to_i16(&self) -> i16;
 }
 
 #[cfg(test)]

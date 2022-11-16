@@ -1,20 +1,33 @@
 use bigdecimal::BigDecimal;
+use expose_derive::Expose;
 use pnwkit::Object;
 
-#[derive(Clone, Debug, sqlx::Type)]
+#[derive(Clone, Debug, sqlx::Type, Expose)]
 #[sqlx(type_name = "resources")]
 pub struct Resources {
+    #[expose]
     pub money: BigDecimal,
+    #[expose]
     pub coal: BigDecimal,
+    #[expose]
     pub oil: BigDecimal,
+    #[expose]
     pub uranium: BigDecimal,
+    #[expose]
     pub iron: BigDecimal,
+    #[expose]
     pub bauxite: BigDecimal,
+    #[expose]
     pub lead: BigDecimal,
+    #[expose]
     pub gasoline: BigDecimal,
+    #[expose]
     pub munitions: BigDecimal,
+    #[expose]
     pub steel: BigDecimal,
+    #[expose]
     pub aluminum: BigDecimal,
+    #[expose]
     pub food: BigDecimal,
 }
 

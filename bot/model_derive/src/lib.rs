@@ -510,6 +510,5 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
 
         impl std::cmp::Eq for #name {}
     };
-    // panic!("{}", gen.to_string());
     gen.into()
 }

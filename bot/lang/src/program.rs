@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::ast::ValueResult;
 use crate::Context;
 use crate::{ast::Ast, lang::ExpressionParser};
@@ -5,13 +7,13 @@ use lalrpop_util::{lexer::Token, ParseError};
 
 #[derive(Debug, Clone)]
 pub struct Program {
-    ast: Ast,
+    ast: Arc<Ast>,
 }
 
 impl Program {
     pub fn compile(source: &'_ str) -> Result<Program, ParseError<usize, Token<'_>, &'_ str>> {
         match ExpressionParser::new().parse(source) {
-            Ok(ast) => Ok(Program { ast }),
+            Ok(ast) => Ok(Program { ast: Arc::new(ast) }),
             Err(err) => Err(err),
         }
     }
