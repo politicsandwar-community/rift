@@ -65,3 +65,5 @@ impl Expose for String {
         }
     }
 }
+
+impl Expose for time::OffsetDateTime {}

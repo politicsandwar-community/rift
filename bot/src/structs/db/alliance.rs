@@ -12,7 +12,7 @@ use crate::{
     types::{Context, Error},
 };
 
-#[derive(Clone, Debug, Model, Expose)]
+#[derive(Clone, Debug, Expose, Model)]
 #[table = "alliances"]
 #[cache_name = "alliance"]
 #[subscriptions = "Alliance"]
@@ -26,9 +26,9 @@ pub struct Alliance {
     pub acronym: Option<String>,
     #[expose]
     pub score: BigDecimal,
-    // #[expose] // TODO: implement enums in lang
+    #[expose]
     pub color: Color,
-    // #[expose] // TODO: implement time in lang
+    #[expose]
     pub date: OffsetDateTime,
     #[expose]
     #[field("accept_members")]

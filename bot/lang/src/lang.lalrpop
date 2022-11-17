@@ -2,8 +2,13 @@ use crate::ast::{Arr, Ast, Op, Value};
 use bigdecimal::BigDecimal;
 // use dashmap::DashMap;
 use std::str::FromStr;
+use crate::error::CompileError;
 
 grammar;
+
+extern {
+    type Error = CompileError;
+}
 
 pub Expression: Ast = {
     CondExpr,
@@ -77,10 +82,14 @@ UnaryOp: Op = {
 }
 
 Value: Value = {
-    r"[+-]?[0-9]+" => Value::Int(i64::from_str(<>).unwrap()),
-    r"[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?" => Value::Float(f64::from_str(<>).unwrap()),
-    r"d[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?" => Value::Decimal(BigDecimal::from_str(&<>[1..]).unwrap()),
+    r"[+-]?[0-9]+" =>? i64::from_str(<>).map_err(|e| CompileError::ParseIntError(e, <>.to_string()).into()).map(Value::Int),
+    r"[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?" =>? f64::from_str(<>).map_err(|e| CompileError::ParseFloatError(e, <>.to_string()).into()).map(Value::Float),
+    r"d[+-]?[0-9]*\.[0-9]+([eE][+-]?[0-9]+)?" =>? BigDecimal::from_str(&<>[1..]).map_err(|e| CompileError::ParseDecimalError(e, <>.to_string()).into()).map(Value::Decimal),
     r#""([^"\\]|\\.)*""# => Value::String(<>.to_string()),
+    r#"t"(?:[^"\\]|\\.)*""# =>? time::OffsetDateTime::parse(
+            <>,
+            &time::format_description::well_known::Iso8601::DEFAULT,
+        ).map_err(|e| CompileError::ParseTimeError(e, <>.to_string()).into()).map(Value::Time),
     "true" => Value::Bool(true),
     "false" => Value::Bool(false),
     "None" => Value::None,

@@ -56,6 +56,7 @@ impl Ast {
                             Value::Bool(val) => val.get_attr(ctx, ident_ident),
                             Value::String(val) => val.get_attr(ctx, ident_ident),
                             Value::AttrVar(val) => val.0.get_attr(ctx, ident_ident),
+                            Value::Time(val) => val.get_attr(ctx, ident_ident),
                             _ => Err(RuntimeError::AttributeNotFound(ident_ident.clone())),
                         },
                         Err(err) => Err(err),
@@ -77,6 +78,7 @@ impl Ast {
                             Value::Bool(val) => val.get_static_attr(ctx, ident_ident),
                             Value::String(val) => val.get_static_attr(ctx, ident_ident),
                             Value::AttrVar(val) => val.0.get_static_attr(ctx, ident_ident),
+                            Value::Time(val) => val.get_static_attr(ctx, ident_ident),
                             _ => Err(RuntimeError::AttributeNotFound(ident_ident.clone())),
                         },
                         Err(err) => Err(err),
@@ -163,6 +165,7 @@ pub enum Value {
     Array(Arr),
     AttrVar(Var),
     None,
+    Time(time::OffsetDateTime),
 }
 
 type FuncFn = dyn Fn(&Context, Vec<Value>) -> ValueResult;

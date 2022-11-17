@@ -1,9 +1,12 @@
 use crate::{ast::Op, Value};
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub enum CompileError {
-    NumberOutOfRange,
     ParseError(String),
+    ParseTimeError(time::error::Parse, String),
+    ParseIntError(std::num::ParseIntError, String),
+    ParseFloatError(std::num::ParseFloatError, String),
+    ParseDecimalError(bigdecimal::ParseBigDecimalError, String),
 }
 
 #[derive(Clone, Debug)]

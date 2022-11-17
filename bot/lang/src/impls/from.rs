@@ -99,3 +99,9 @@ where
         (*value).clone().into()
     }
 }
+
+impl From<time::OffsetDateTime> for Value {
+    fn from(value: time::OffsetDateTime) -> Self {
+        Value::Time(value)
+    }
+}
