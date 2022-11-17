@@ -12,6 +12,8 @@ impl ToBool for Value {
             Value::Map(value) => !value.0.is_empty(),
             Value::Array(value) => !value.0.is_empty(),
             Value::AttrVar(_) => true,
+            Value::None => false,
+            Value::Time(_) => true,
         }
     }
 }

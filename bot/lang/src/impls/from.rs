@@ -77,3 +77,31 @@ impl From<Map> for Value {
         Value::Map(value)
     }
 }
+
+impl<T> From<Option<T>> for Value
+where
+    Value: From<T>,
+{
+    fn from(value: Option<T>) -> Self {
+        match value {
+            Some(value) => value.into(),
+            None => Value::None,
+        }
+    }
+}
+
+impl<T> From<&T> for Value
+where
+    Value: From<T>,
+    T: Clone,
+{
+    fn from(value: &T) -> Self {
+        (*value).clone().into()
+    }
+}
+
+impl From<time::OffsetDateTime> for Value {
+    fn from(value: time::OffsetDateTime) -> Self {
+        Value::Time(value)
+    }
+}

@@ -11,6 +11,7 @@ lalrpop-util = "0.19.8"
 regex = "1"
 dashmap = "5.3.4"
 bigdecimal = "0.3.0"
+time = "0.3.13"
 
 [dev-dependencies]
 criterion = "0.4.0"

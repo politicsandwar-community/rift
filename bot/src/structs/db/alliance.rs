@@ -12,7 +12,7 @@ use crate::{
     types::{Context, Error},
 };
 
-#[derive(Clone, Debug, Model, Expose)]
+#[derive(Clone, Debug, Expose, Model)]
 #[table = "alliances"]
 #[cache_name = "alliance"]
 #[subscriptions = "Alliance"]
@@ -20,17 +20,28 @@ use crate::{
 pub struct Alliance {
     #[expose]
     pub id: i32,
+    #[expose]
     pub name: String,
+    #[expose]
     pub acronym: Option<String>,
+    #[expose]
     pub score: BigDecimal,
+    #[expose]
     pub color: Color,
+    #[expose]
     pub date: OffsetDateTime,
+    #[expose]
     #[field("accept_members")]
     pub accepts_members: bool,
+    #[expose]
     pub flag: Option<String>,
+    #[expose]
     pub forum_link: Option<String>,
+    #[expose]
     pub discord_link: Option<String>,
+    #[expose]
     pub wiki_link: Option<String>,
+    #[expose]
     #[no_type_check]
     #[field_custom("None")]
     pub estimated_resources: Option<Resources>,

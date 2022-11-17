@@ -8,7 +8,9 @@ use std::{
 use bigdecimal::BigDecimal;
 use dashmap::DashMap;
 
-use crate::{error::RuntimeError, Context};
+use crate::{error::RuntimeError, Context, Expose};
+
+type BoxedAst = Box<Ast>;
 
 #[derive(Debug, Clone)]
 pub enum Op {
@@ -33,11 +35,12 @@ pub enum Op {
 
 #[derive(Debug, Clone)]
 pub enum Ast {
-    Ident(Option<Box<Ast>>, String),
-    Index(Box<Ast>, Box<Ast>),
-    Call(Box<Ast>, Vec<Ast>),
+    Ident(Option<BoxedAst>, String),
+    Static(Option<BoxedAst>, String),
+    Index(BoxedAst, BoxedAst),
+    Call(BoxedAst, Vec<Ast>),
     Literal(Value),
-    Expr(Option<Box<Ast>>, Op, Box<Ast>),
+    Expr(Option<BoxedAst>, Op, BoxedAst),
 }
 
 impl Ast {
@@ -53,6 +56,7 @@ impl Ast {
                             Value::Bool(val) => val.get_attr(ctx, ident_ident),
                             Value::String(val) => val.get_attr(ctx, ident_ident),
                             Value::AttrVar(val) => val.0.get_attr(ctx, ident_ident),
+                            Value::Time(val) => val.get_attr(ctx, ident_ident),
                             _ => Err(RuntimeError::AttributeNotFound(ident_ident.clone())),
                         },
                         Err(err) => Err(err),
@@ -64,11 +68,30 @@ impl Ast {
                     None => Err(RuntimeError::VariableNotFound(ident.clone())),
                 },
             },
-            Ast::Index(ident, index) => match ident.execute(ctx) {
-                Ok(value) => match value {
-                    Value::Array(arr) => arr.0.get_index(ctx, index),
-                    _ => Err(RuntimeError::NotIndexable(value)),
+            Ast::Static(ast, ident) => match ast.as_ref() {
+                Some(ast) => match ast.as_ref() {
+                    Ast::Ident(_, ident_ident) => match ast.execute(ctx) {
+                        Ok(value) => match value {
+                            Value::Int(val) => val.get_static_attr(ctx, ident_ident),
+                            Value::Float(val) => val.get_static_attr(ctx, ident_ident),
+                            Value::Decimal(val) => val.get_static_attr(ctx, ident_ident),
+                            Value::Bool(val) => val.get_static_attr(ctx, ident_ident),
+                            Value::String(val) => val.get_static_attr(ctx, ident_ident),
+                            Value::AttrVar(val) => val.0.get_static_attr(ctx, ident_ident),
+                            Value::Time(val) => val.get_static_attr(ctx, ident_ident),
+                            _ => Err(RuntimeError::AttributeNotFound(ident_ident.clone())),
+                        },
+                        Err(err) => Err(err),
+                    },
+                    _ => Err(RuntimeError::AttributeNotFound(ident.clone())),
                 },
+                None => match ctx.values.get(ident) {
+                    Some(var) => Ok(var.value().clone()),
+                    None => Err(RuntimeError::VariableNotFound(ident.clone())),
+                },
+            },
+            Ast::Index(ident, _) => match ident.execute(ctx) {
+                Ok(value) => Err(RuntimeError::NotIndexable(value)),
                 Err(err) => Err(err),
             },
             Ast::Call(ast, args) => match ast.execute(ctx) {
@@ -141,6 +164,8 @@ pub enum Value {
     Map(Map),
     Array(Arr),
     AttrVar(Var),
+    None,
+    Time(time::OffsetDateTime),
 }
 
 type FuncFn = dyn Fn(&Context, Vec<Value>) -> ValueResult;
@@ -181,30 +206,18 @@ impl PartialOrd for Func {
     }
 }
 
-pub trait FuncClone {
-    fn clone_box(&self) -> Box<FuncFn>;
-}
+#[derive(Debug)]
+pub struct Var(pub Arc<dyn Expose>);
 
-impl<T> FuncClone for T
-where
-    T: 'static + Fn(&Context, Vec<Value>) -> ValueResult + Clone,
-{
-    fn clone_box(&self) -> Box<FuncFn> {
-        Box::new(self.clone())
+impl Var {
+    pub fn new(var: impl Expose + 'static) -> Self {
+        Self(Arc::new(var))
     }
 }
-
-pub struct Var(pub Box<dyn ExposeVar>);
 
 impl Clone for Var {
     fn clone(&self) -> Self {
         Self(self.0.clone())
-    }
-}
-
-impl Debug for Var {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Var").finish()
     }
 }
 
@@ -218,29 +231,6 @@ impl PartialOrd for Var {
     fn partial_cmp(&self, _other: &Self) -> Option<Ordering> {
         None
     }
-}
-
-pub trait VarClone {
-    fn clone_box(&self) -> Box<dyn ExposeVar>;
-}
-
-impl<T> VarClone for T
-where
-    T: 'static + ExposeVar + Clone,
-{
-    fn clone_box(&self) -> Box<dyn ExposeVar> {
-        Box::new(self.clone())
-    }
-}
-
-impl Clone for Box<dyn ExposeVar> {
-    fn clone(&self) -> Box<dyn ExposeVar> {
-        self.clone_box()
-    }
-}
-
-pub trait ExposeVar: VarClone {
-    fn get_attr(&self, ctx: &Context, ident: &str) -> ValueResult;
 }
 
 pub trait LangIndexVar {

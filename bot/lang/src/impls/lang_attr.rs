@@ -1,13 +1,13 @@
 use bigdecimal::BigDecimal;
 
 use crate::{
-    ast::{ExposeVar, Func, ValueResult},
+    ast::{Func, ValueResult},
     error::RuntimeError,
-    Context, Value,
+    Context, Expose, Value,
 };
 
-impl ExposeVar for i64 {
-    fn get_attr<'a>(&'a self, _ctx: &Context, ident: &str) -> ValueResult {
+impl Expose for i64 {
+    fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
         let cloned_self = *self;
         match ident {
             "to_string" => {
@@ -18,7 +18,7 @@ impl ExposeVar for i64 {
     }
 }
 
-impl ExposeVar for f64 {
+impl Expose for f64 {
     fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
         let cloned_self = *self;
         match ident {
@@ -30,7 +30,7 @@ impl ExposeVar for f64 {
     }
 }
 
-impl ExposeVar for BigDecimal {
+impl Expose for BigDecimal {
     fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
         let cloned_self = self.clone();
         match ident {
@@ -42,7 +42,7 @@ impl ExposeVar for BigDecimal {
     }
 }
 
-impl ExposeVar for bool {
+impl Expose for bool {
     fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
         let cloned_self = *self;
         match ident {
@@ -54,7 +54,7 @@ impl ExposeVar for bool {
     }
 }
 
-impl ExposeVar for String {
+impl Expose for String {
     fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
         let cloned_self = self.clone();
         match ident {
@@ -65,3 +65,5 @@ impl ExposeVar for String {
         }
     }
 }
+
+impl Expose for time::OffsetDateTime {}

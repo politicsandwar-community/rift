@@ -1104,6 +1104,7 @@ dependencies = [
  "lalrpop",
  "lalrpop-util",
  "regex",
+ "time",
 ]
 
 [[package]]

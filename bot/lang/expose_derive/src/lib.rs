@@ -21,7 +21,7 @@ fn impl_expose_derive(ast: &syn::DeriveInput) -> TokenStream {
             let ident = field.ident.as_ref().expect("field must have an identifier");
             let string = ident.to_string();
             quote! {
-                #string => Ok(self.#ident.into()),
+                #string => Ok((&self.#ident).into()),
             }
         });
     let gen = quote! {
@@ -31,6 +31,12 @@ fn impl_expose_derive(ast: &syn::DeriveInput) -> TokenStream {
                     #( #exposed )*
                     _ => Err(lang::RuntimeError::AttributeNotFound(ident.to_string())),
                 }
+            }
+        }
+
+        impl From<#name> for lang::Value {
+            fn from(value: #name) -> Self {
+                lang::Value::AttrVar(lang::Var::new(value))
             }
         }
     };
