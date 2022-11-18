@@ -655,42 +655,42 @@ model tags {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model target_configs {
-  id            Int      @default(autoincrement())
-  owner_id      BigInt?
-  name          String?
-  count         BigInt?
-  rater         Int?
-  condition     String?
-  use_condition String?
-  attack        Boolean?
+  id            Int     @unique @default(autoincrement())
+  owner_id      BigInt
+  name          String
+  count         BigInt
+  rater         Int
+  condition     String
+  use_condition String
+  attack        Boolean
 
   @@ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model target_raters {
-  id             Int     @default(autoincrement())
-  cities         String?
-  infrastructure String?
-  activity       String?
-  soldiers       String?
-  tanks          String?
-  aircraft       String?
-  ships          String?
-  missiles       String?
-  nukes          String?
-  money          String?
-  coal           String?
-  oil            String?
-  uranium        String?
-  iron           String?
-  bauxite        String?
-  lead           String?
-  gasoline       String?
-  munitions      String?
-  steel          String?
-  aluminum       String?
-  food           String?
+  id             Int    @unique @default(autoincrement())
+  cities         String
+  infrastructure String
+  activity       String
+  soldiers       String
+  tanks          String
+  aircraft       String
+  ships          String
+  missiles       String
+  nukes          String
+  money          String
+  coal           String
+  oil            String
+  uranium        String
+  iron           String
+  bauxite        String
+  lead           String
+  gasoline       String
+  munitions      String
+  steel          String
+  aluminum       String
+  food           String
 
   @@ignore
 }
