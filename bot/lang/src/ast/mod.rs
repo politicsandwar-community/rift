@@ -166,6 +166,7 @@ pub enum Value {
     AttrVar(Var),
     None,
     Time(time::OffsetDateTime),
+    Duration(Duration),
 }
 
 type FuncFn = dyn Fn(&Context, Vec<Value>) -> ValueResult;
@@ -281,5 +282,51 @@ impl PartialOrd for Map {
 impl Clone for Map {
     fn clone(&self) -> Self {
         Self(self.0.clone())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, PartialOrd)]
+pub struct Duration {
+    pub seconds: i64,
+}
+
+impl Duration {
+    #[inline(always)]
+    pub fn years(&self) -> f64 {
+        self.seconds as f64 / 60.0 / 60.0 / 24.0 / 365.0
+    }
+
+    #[inline(always)]
+    pub fn weeks(&self) -> f64 {
+        self.seconds as f64 / 60.0 / 60.0 / 24.0 / 7.0
+    }
+
+    #[inline(always)]
+    pub fn days(&self) -> f64 {
+        self.seconds as f64 / 60.0 / 60.0 / 24.0
+    }
+
+    #[inline(always)]
+    pub fn hours(&self) -> f64 {
+        self.seconds as f64 / 60.0 / 60.0
+    }
+
+    #[inline(always)]
+    pub fn minutes(&self) -> f64 {
+        self.seconds as f64 / 60.0
+    }
+}
+
+impl Expose for Duration {
+    fn get_attr(&self, _ctx: &Context, ident: &str) -> ValueResult {
+        match ident {
+            "years" => Ok(self.years().into()),
+            "weeks" => Ok(self.weeks().into()),
+            "days" => Ok(self.days().into()),
+            "hours" => Ok(self.hours().into()),
+            "minutes" => Ok(self.minutes().into()),
+            "seconds" => Ok(self.seconds.into()),
+            _ => Err(RuntimeError::AttributeNotFound(ident.to_string())),
+        }
     }
 }

@@ -12,6 +12,7 @@ regex = "1"
 dashmap = "5.3.4"
 bigdecimal = "0.3.0"
 time = "0.3.13"
+expose_derive = { path = "expose_derive" }
 
 [dev-dependencies]
 criterion = "0.4.0"

@@ -14,6 +14,7 @@ impl ToBool for Value {
             Value::AttrVar(_) => true,
             Value::None => false,
             Value::Time(_) => true,
+            Value::Duration(_) => true,
         }
     }
 }

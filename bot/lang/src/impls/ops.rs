@@ -95,6 +95,8 @@ impl Sub for Value {
             (Value::Decimal(a), Value::Decimal(b)) => Ok((a - b).into()),
             (Value::Decimal(a), Value::Int(b)) => Ok((a - BigDecimal::from(b)).into()),
 
+            (Value::Time(a), Value::Time(b)) => Ok((a - b).into()),
+
             (a, b) => Err(RuntimeError::InvalidOp(Op::Sub, Some(a), b)),
         }
     }
