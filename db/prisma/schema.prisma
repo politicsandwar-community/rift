@@ -670,6 +670,8 @@ model target_configs {
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model target_raters {
   id             Int    @unique @default(autoincrement())
+  owner_id       BigInt
+  use_condition  String
   cities         String
   infrastructure String
   activity       String
