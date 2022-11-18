@@ -1,5 +1,6 @@
 mod help;
 mod main;
+mod target;
 mod toot;
 mod who;
 
@@ -11,5 +12,6 @@ pub fn commands() -> Vec<Command> {
         .chain(help::commands())
         .chain(who::commands())
         .chain(toot::commands())
+        .chain(target::commands())
         .collect()
 }

@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use async_trait::async_trait;
 use bigdecimal::BigDecimal;
 use expose_derive::Expose;
@@ -9,7 +11,7 @@ use crate::{
     enums::pnw::{AlliancePosition, Color, Continent, DomesticPolicy, WarPolicy},
     errors::NotFoundError,
     structs::Resources,
-    traits::Convert,
+    traits::{Convert, CreateEmbedBox, ToEmbed},
     types::{Context, Error},
 };
 
@@ -131,5 +133,17 @@ impl Convert for Nation {
 impl Nation {
     pub fn lang_average_infrastructure(&self) -> ValueResult {
         Ok(self.num_cities.into())
+    }
+}
+
+impl ToEmbed for Nation {
+    fn to_embed<'a>(&'a self, ctx: &'a Context<'a>) -> CreateEmbedBox<'a> {
+        Box::new(crate::embeds::nation(ctx, self))
+    }
+}
+
+impl Display for Nation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} - {}", self.id, self.name)
     }
 }

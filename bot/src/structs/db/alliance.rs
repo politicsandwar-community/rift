@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use async_trait::async_trait;
 use bigdecimal::BigDecimal;
 use expose_derive::Expose;
@@ -8,7 +10,7 @@ use crate::{
     enums::pnw::Color,
     errors::NotFoundError,
     structs::resources::Resources,
-    traits::Convert,
+    traits::{Convert, CreateEmbedBox, ToEmbed},
     types::{Context, Error},
 };
 
@@ -82,5 +84,17 @@ impl Convert for Alliance {
                 Err(NotFoundError::Alliance(None).into())
             }
         }
+    }
+}
+
+impl ToEmbed for Alliance {
+    fn to_embed<'a>(&'a self, ctx: &'a Context<'a>) -> CreateEmbedBox<'a> {
+        Box::new(crate::embeds::alliance(ctx, self))
+    }
+}
+
+impl Display for Alliance {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} - {}", self.id, self.name)
     }
 }
