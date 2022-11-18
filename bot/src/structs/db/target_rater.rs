@@ -1,4 +1,4 @@
-use crate::consts::target_rater;
+use crate::{consts::target_rater, impl_convert_from_option_id};
 use expose_derive::Expose;
 use model_derive::Model;
 
@@ -7,6 +7,8 @@ use model_derive::Model;
 #[cache_name = "target_rater"]
 pub struct TargetRater {
     id: i32,
+    owner_id: i64,
+    use_condition: String,
     cities: String,
     infrastructure: String,
     activity: String,
@@ -31,9 +33,11 @@ pub struct TargetRater {
 }
 
 impl TargetRater {
-    pub fn new() -> Self {
+    pub fn new(owner_id: i64, use_condition: String) -> Self {
         Self {
             id: 0,
+            owner_id,
+            use_condition,
             cities: target_rater::CITIES_DEFAULT.to_string(),
             infrastructure: target_rater::INFRASTRUCTURE_DEFAULT.to_string(),
             activity: target_rater::ACTIVITY_DEFAULT.to_string(),
@@ -58,3 +62,5 @@ impl TargetRater {
         }
     }
 }
+
+impl_convert_from_option_id!(TargetRater, get_target_rater);

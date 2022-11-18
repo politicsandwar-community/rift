@@ -1,9 +1,7 @@
 use expose_derive::Expose;
 use model_derive::Model;
 
-use crate::structs::Flags;
-
-use super::TargetRater;
+use crate::{impl_convert_from_option_id, structs::Flags};
 
 #[derive(Clone, Debug, Expose, Model)]
 #[table = "target_configs"]
@@ -20,3 +18,5 @@ pub struct TargetConfig {
     use_condition: String,
     attack: bool,
 }
+
+impl_convert_from_option_id!(TargetConfig, get_target_config);

@@ -1,7 +1,7 @@
 use crate::traits::ToEmbed;
 
 macro_rules! not_found {
-    ($($variant:ident, $name:ident, $infer:ident)+) => {
+    ($($variant:ident, $name:literal, $infer:ident)+) => {
         #[derive(Debug)]
         pub enum NotFoundError {
             $($variant(Option<String>)),*
@@ -11,7 +11,7 @@ macro_rules! not_found {
             fn to_embed<'a>(&'a self, ctx: &'a $crate::types::Context<'a>) -> Box<dyn Fn(&mut poise::serenity_prelude::CreateEmbed) -> &mut poise::serenity_prelude::CreateEmbed + '_> {
                 Box::new(match self {
                     $(Self::$variant(s) => {
-                        $crate::embeds::not_found_error(ctx, stringify!($name), s, $infer)
+                        $crate::embeds::not_found_error(ctx, $name, s, $infer)
                     }),*
                 })
             }
@@ -21,7 +21,7 @@ macro_rules! not_found {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 match self {
                     $(
-                        Self::$variant(_) => write!(f, "{} not found", stringify!($name))
+                        Self::$variant(_) => write!(f, "{} not found", $name)
                     ),*
                 }
             }
@@ -30,8 +30,10 @@ macro_rules! not_found {
 }
 
 not_found!(
-    Nation, nation, true
-    Alliance, alliance, true
+    Nation, "nation", true
+    Alliance, "alliance", true
+    TargetRater, "target rater", false
+    TargetConfig, "target config", false
 );
 
 impl From<NotFoundError> for Box<dyn ToEmbed> {
