@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use bigdecimal::BigDecimal;
 use expose_derive::Expose;
+use lang::ValueResult;
 use model_derive::Model;
 use time::OffsetDateTime;
 
@@ -17,6 +18,7 @@ use crate::{
 #[cache_name = "nation"]
 #[subscriptions = "Nation"]
 #[has_pnwkit]
+#[expose_property = "lang_average_infrastructure as average_infrastructure"]
 pub struct Nation {
     #[expose]
     pub id: i32,
@@ -123,5 +125,11 @@ impl Convert for Nation {
                 Err(NotFoundError::Nation(None).into())
             }
         }
+    }
+}
+
+impl Nation {
+    pub fn lang_average_infrastructure(&self) -> ValueResult {
+        Ok(self.num_cities.into())
     }
 }

@@ -1,5 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
+use std::collections::HashMap;
 use syn::Expr;
 
 #[proc_macro_derive(
@@ -19,6 +20,8 @@ use syn::Expr;
         subscriptions,
         has_pnwkit,
         slice,
+        type_alias,
+        value_is_inner,
     )
 )]
 pub fn model_derive(input: TokenStream) -> TokenStream {
@@ -90,6 +93,8 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     .unwrap();
     let mut no_type_check_columns: Vec<String> = vec![];
     let mut slice_columns: Vec<String> = vec![];
+    let mut aliased_columns: HashMap<String, String> = HashMap::new();
+    let mut inner_columns: Vec<String> = vec![];
     let insert_columns: Vec<String> =
         data.fields
             .iter()
@@ -103,6 +108,21 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                     .attrs
                     .iter()
                     .any(|attr| attr.path.is_ident("no_type_check"));
+                let alias = field
+                    .attrs
+                    .iter()
+                    .find(|attr| attr.path.is_ident("type_alias"))
+                    .map(|attr| match attr.parse_meta().unwrap() {
+                        syn::Meta::NameValue(meta) => match meta.lit {
+                            syn::Lit::Str(lit) => lit.value(),
+                            _ => panic!("field attribute must be a string literal"),
+                        },
+                        _ => panic!("field attribute must be a string literal"),
+                    });
+                let value_is_inner = field
+                    .attrs
+                    .iter()
+                    .any(|attr| attr.path.is_ident("value_is_inner"));
                 let slice = field.attrs.iter().any(|attr| attr.path.is_ident("slice"));
                 let column = field
                     .ident
@@ -115,6 +135,12 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 if slice {
                     slice_columns.push(column.clone());
                 }
+                if let Some(a) = alias {
+                    aliased_columns.insert(field.ident.as_ref().unwrap().to_string(), a);
+                }
+                if value_is_inner {
+                    inner_columns.push(column.clone());
+                }
                 column
             })
             .collect();
@@ -126,7 +152,9 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     let returning_names = insert_columns
         .iter()
         .map(|c| {
-            if no_type_check_columns.contains(c) {
+            if let Some(a) = aliased_columns.get(c) {
+                format!(r#"{c} as "{c}: {a}""#)
+            } else if no_type_check_columns.contains(c) {
                 format!(r#"{c} as "{c}: _""#)
             } else {
                 c.to_owned()
@@ -194,6 +222,8 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .map(|c| {
             if slice_columns.contains(c) {
                 syn::parse_str(format!("self.{}.as_ref().map(|v| &v[..])", c).as_str()).unwrap()
+            } else if inner_columns.contains(c) {
+                syn::parse_str(format!("self.{}.0", c).as_str()).unwrap()
             } else {
                 syn::parse_str(format!("self.{}", c).as_str()).unwrap()
             }
@@ -204,12 +234,34 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         .map(|c| {
             if slice_columns.contains(c) {
                 syn::parse_str(format!("self.{}.as_ref().map(|v| &v[..])", c).as_str()).unwrap()
+            } else if inner_columns.contains(c) {
+                syn::parse_str(format!("self.{}.0", c).as_str()).unwrap()
             } else {
                 syn::parse_str(format!("self.{}", c).as_str()).unwrap()
             }
         })
         .collect::<Vec<syn::Expr>>();
-    let select_query = format!("SELECT * FROM {table};");
+    let select_columns = data
+        .fields
+        .iter()
+        .filter(|field| !field.attrs.iter().any(|attr| attr.path.is_ident("no_load")))
+        .map(|field| {
+            let c = field
+                .ident
+                .as_ref()
+                .expect("fields must have an identifier")
+                .to_string();
+            if let Some(a) = aliased_columns.get(&c) {
+                format!(r#"{c} as "{c}: {a}""#)
+            } else if no_type_check_columns.contains(&c) {
+                format!(r#"{c} as "{c}: _""#)
+            } else {
+                c.to_owned()
+            }
+        })
+        .collect::<Vec<String>>()
+        .join(", ");
+    let select_query = format!("SELECT {select_columns} FROM {table};");
 
     let mut delete_where = Vec::new();
     let mut where_counter = 1;
@@ -510,5 +562,6 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
 
         impl std::cmp::Eq for #name {}
     };
+    // panic!("{}", gen.to_string());
     gen.into()
 }
