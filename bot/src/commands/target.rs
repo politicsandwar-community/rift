@@ -1,6 +1,7 @@
 use crate::{
     convert,
     structs::TargetRater,
+    traits::ToEmbed,
     types::{Command, Context, Error},
 };
 
@@ -43,6 +44,7 @@ async fn target_rater_info(
     #[description = "The target rater to use."] rater: String,
 ) -> Result<(), Error> {
     convert!(ctx, rater = TargetRater);
+    ctx.send(|f| f.embed(rater.to_embed(&ctx))).await?;
     Ok(())
 }
 

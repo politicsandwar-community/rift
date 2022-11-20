@@ -1,8 +1,9 @@
 use poise::serenity_prelude::CreateEmbed;
 
-use crate::{embeds::fatal_error, types::Context};
-
-pub type CreateEmbedBox<'a> = Box<dyn Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a>;
+use crate::{
+    embeds::fatal_error,
+    types::{Context, CreateEmbedBox},
+};
 
 pub trait ToEmbed: std::fmt::Display + std::fmt::Debug + Send + Sync {
     fn to_embed<'a>(&'a self, ctx: &'a Context<'a>) -> CreateEmbedBox<'a>;

@@ -6,7 +6,7 @@ use crate::{
     types::Context,
 };
 
-use bigdecimal::{BigDecimal, FromPrimitive, ToPrimitive};
+use bigdecimal::ToPrimitive;
 use poise::serenity_prelude::CreateEmbed;
 
 pub fn alliance<'a>(

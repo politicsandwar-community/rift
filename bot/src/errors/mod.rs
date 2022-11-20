@@ -1,8 +1,9 @@
 #![allow(unused_must_use)]
 #![allow(unused_variables)]
-mod not_found;
+pub mod not_found;
 
 pub use not_found::*;
+
 use poise::FrameworkError;
 
 use crate::{embeds, structs::Data, types::Error};
@@ -10,7 +11,8 @@ use crate::{embeds, structs::Data, types::Error};
 pub async fn on_error(e: FrameworkError<'_, Data, Error>) {
     match e {
         FrameworkError::ArgumentParse { error, input, ctx } => {
-            ctx.send(|f| f.embed(embeds::fatal_error(&ctx))).await;
+            ctx.send(|f| f.embed(embeds::errors::fatal_error(&ctx)))
+                .await;
         },
         FrameworkError::Command { error, ctx } => {
             ctx.send(|f| f.embed(error.to_embed(&ctx))).await;
@@ -27,11 +29,13 @@ pub async fn on_error(e: FrameworkError<'_, Data, Error>) {
             ctx,
         } => {},
         FrameworkError::DmOnly { ctx } => {
-            ctx.send(|f| f.embed(embeds::dm_only_error(&ctx))).await;
+            ctx.send(|f| f.embed(embeds::errors::dm_only_error(&ctx)))
+                .await;
         },
         FrameworkError::DynamicPrefix { error } => {},
         FrameworkError::GuildOnly { ctx } => {
-            ctx.send(|r| r.embed(embeds::guild_only_error(&ctx))).await;
+            ctx.send(|r| r.embed(embeds::errors::guild_only_error(&ctx)))
+                .await;
         },
         FrameworkError::Listener {
             error,

@@ -11,7 +11,7 @@ macro_rules! not_found {
             fn to_embed<'a>(&'a self, ctx: &'a $crate::types::Context<'a>) -> Box<dyn Fn(&mut poise::serenity_prelude::CreateEmbed) -> &mut poise::serenity_prelude::CreateEmbed + '_> {
                 Box::new(match self {
                     $(Self::$variant(s) => {
-                        $crate::embeds::not_found_error(ctx, $name, s, $infer)
+                        $crate::embeds::errors::not_found_error(ctx, $name, s, $infer)
                     }),*
                 })
             }

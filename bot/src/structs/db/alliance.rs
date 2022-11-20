@@ -10,8 +10,8 @@ use crate::{
     enums::pnw::Color,
     errors::NotFoundError,
     structs::resources::Resources,
-    traits::{Convert, CreateEmbedBox, ToEmbed},
-    types::{Context, Error},
+    traits::{Convert, ToEmbed},
+    types::{Context, CreateEmbedBox, Error},
 };
 
 #[derive(Clone, Debug, Expose, Model)]
@@ -89,7 +89,7 @@ impl Convert for Alliance {
 
 impl ToEmbed for Alliance {
     fn to_embed<'a>(&'a self, ctx: &'a Context<'a>) -> CreateEmbedBox<'a> {
-        Box::new(crate::embeds::alliance(ctx, self))
+        Box::new(crate::embeds::pnw::alliance(ctx, self))
     }
 }
 

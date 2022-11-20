@@ -11,8 +11,8 @@ use crate::{
     enums::pnw::{AlliancePosition, Color, Continent, DomesticPolicy, WarPolicy},
     errors::NotFoundError,
     structs::Resources,
-    traits::{Convert, CreateEmbedBox, ToEmbed},
-    types::{Context, Error},
+    traits::{Convert, ToEmbed},
+    types::{Context, CreateEmbedBox, Error},
 };
 
 #[derive(Clone, Debug, Expose, Model)]
@@ -138,7 +138,7 @@ impl Nation {
 
 impl ToEmbed for Nation {
     fn to_embed<'a>(&'a self, ctx: &'a Context<'a>) -> CreateEmbedBox<'a> {
-        Box::new(crate::embeds::nation(ctx, self))
+        Box::new(crate::embeds::pnw::nation(ctx, self))
     }
 }
 
