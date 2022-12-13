@@ -66,7 +66,7 @@ pub fn target_counting(count: &Flags) -> String {
     if count.contains(target::TARGET_RATER_FOOD_FLAG) {
         counting.push("Battles");
     }
-    if counting.len() == 0 {
+    if counting.is_empty() {
         crate::strings::NONE.to_string()
     } else {
         counting.join(", ")

@@ -1,5 +1,3 @@
-use poise::serenity_prelude::CreateEmbed;
-
 use crate::{
     embeds::fatal_error,
     types::{Context, CreateEmbedBox},
