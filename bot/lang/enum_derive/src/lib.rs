@@ -70,6 +70,12 @@ fn impl_enum_derive(ast: &syn::DeriveInput) -> TokenStream {
                 lang::Value::AttrVar(lang::Var::new(value))
             }
         }
+
+        impl From<&#name> for lang::Value {
+            fn from(value: &#name) -> Self {
+                lang::Value::AttrVar(lang::Var::new(value.clone()))
+            }
+        }
     };
     gen.into()
 }

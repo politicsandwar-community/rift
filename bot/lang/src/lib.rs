@@ -9,7 +9,7 @@ mod program;
 
 use std::fmt::Debug;
 
-pub use crate::ast::{Ast, Func, LangIndexVar, Value, ValueResult, Var};
+pub use crate::ast::{Ast, Duration, Func, LangIndexVar, Value, ValueResult, Var};
 pub use crate::context::Context;
 pub use crate::error::{CompileError, RuntimeError, TypeError};
 pub use crate::program::Program;

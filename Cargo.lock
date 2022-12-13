@@ -1101,6 +1101,7 @@ dependencies = [
  "bigdecimal",
  "criterion",
  "dashmap",
+ "expose_derive",
  "lalrpop",
  "lalrpop-util",
  "regex",

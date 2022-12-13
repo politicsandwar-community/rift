@@ -10,7 +10,7 @@ async fn who(
 ) -> Result<(), Error> {
     convert!(ctx, search = Alliance);
 
-    ctx.send(|f| f.embed(embeds::alliance(&ctx, &search)))
+    ctx.send(|f| f.embed(embeds::pnw::alliance(&ctx, &search)))
         .await?;
 
     // let n = ctx.data().cache.get_nation(&input);

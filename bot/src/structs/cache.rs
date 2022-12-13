@@ -105,4 +105,6 @@ cache!(
     nation, nations, Nation, nation_locks
     user, users, User, user_locks
     mention, mentions, Mention, mention_locks
+    target_config, target_configs, TargetConfig, target_config_locks
+    target_rater, target_raters, TargetRater, target_rater_locks
 );

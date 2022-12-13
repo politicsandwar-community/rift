@@ -3,12 +3,18 @@ use dashmap::DashMap;
 
 use crate::{
     ast::{Arr, Func, Map},
-    Ast, Value, Var,
+    Ast, Context, Duration, Value, ValueResult, Var,
 };
 
 impl From<i64> for Value {
     fn from(value: i64) -> Self {
         Value::Int(value)
+    }
+}
+
+impl From<&i64> for Value {
+    fn from(value: &i64) -> Self {
+        Value::Int(*value)
     }
 }
 
@@ -18,9 +24,21 @@ impl From<i32> for Value {
     }
 }
 
+impl From<&i32> for Value {
+    fn from(value: &i32) -> Self {
+        Value::Int(*value as i64)
+    }
+}
+
 impl From<f64> for Value {
     fn from(value: f64) -> Self {
         Value::Float(value)
+    }
+}
+
+impl From<&f64> for Value {
+    fn from(value: &f64) -> Self {
+        Value::Float(*value)
     }
 }
 
@@ -30,15 +48,39 @@ impl From<BigDecimal> for Value {
     }
 }
 
+impl From<&BigDecimal> for Value {
+    fn from(value: &BigDecimal) -> Self {
+        Value::Decimal(value.clone())
+    }
+}
+
 impl From<bool> for Value {
     fn from(value: bool) -> Self {
         Value::Bool(value)
     }
 }
 
+impl From<&bool> for Value {
+    fn from(value: &bool) -> Self {
+        Value::Bool(*value)
+    }
+}
+
 impl From<String> for Value {
     fn from(value: String) -> Self {
         Value::String(value)
+    }
+}
+
+impl From<&String> for Value {
+    fn from(value: &String) -> Self {
+        Value::String(value.clone())
+    }
+}
+
+impl From<&str> for Value {
+    fn from(value: &str) -> Self {
+        Value::String(value.to_string())
     }
 }
 
@@ -90,18 +132,75 @@ where
     }
 }
 
-impl<T> From<&T> for Value
+impl<'a, T> From<&'a Option<T>> for Value
 where
-    Value: From<T>,
-    T: Clone,
+    Value: std::convert::From<&'a T>,
 {
-    fn from(value: &T) -> Self {
-        (*value).clone().into()
+    fn from(value: &'a Option<T>) -> Self {
+        match value {
+            Some(value) => value.into(),
+            None => Value::None,
+        }
     }
 }
 
 impl From<time::OffsetDateTime> for Value {
     fn from(value: time::OffsetDateTime) -> Self {
         Value::Time(value)
+    }
+}
+
+impl From<&time::OffsetDateTime> for Value {
+    fn from(value: &time::OffsetDateTime) -> Self {
+        Value::Time(*value)
+    }
+}
+
+impl From<time::Duration> for Value {
+    fn from(value: time::Duration) -> Self {
+        Value::Duration(value.into())
+    }
+}
+
+impl From<&time::Duration> for Value {
+    fn from(value: &time::Duration) -> Self {
+        Value::Duration(value.into())
+    }
+}
+
+impl From<Duration> for Value {
+    fn from(value: Duration) -> Self {
+        Value::Duration(value)
+    }
+}
+
+impl From<&Duration> for Value {
+    fn from(value: &Duration) -> Self {
+        Value::Duration(value.clone())
+    }
+}
+
+impl From<time::Duration> for Duration {
+    fn from(value: time::Duration) -> Self {
+        Duration {
+            seconds: value.whole_seconds(),
+        }
+    }
+}
+
+impl From<&time::Duration> for Duration {
+    fn from(value: &time::Duration) -> Self {
+        Duration {
+            seconds: value.whole_seconds(),
+        }
+    }
+}
+
+impl<T> From<T> for Value
+where
+    T: Fn(&Context, Vec<Value>) -> ValueResult + Send + Sync + 'static,
+{
+    fn from(v: T) -> Self {
+        Value::Func(Func::new(v))
     }
 }
