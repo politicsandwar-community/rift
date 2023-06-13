@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::{
     consts,
     enums::pnw::AlliancePosition,
@@ -21,15 +23,13 @@ pub fn alliance<'a>(
         .data()
         .cache
         .find_many_nations(|a| a.alliance_id == alliance.id);
-    let cities = ctx.data().cache.find_many_cities(|a| {
-        nations.contains(
-            &ctx.data()
-                .cache
-                .find_exactly_one_nation(|n| n.id == a.nation_id)
-                .unwrap(),
-        )
-    });
 
+    let nation_ids: HashSet<i32> = nations.iter().map(|a| a.id).collect::<HashSet<i32>>();
+
+    let cities = ctx
+        .data()
+        .cache
+        .find_many_cities(|a| nation_ids.contains(&a.nation_id));
     cities
         .iter()
         .for_each(|x| infra += x.infrastructure.to_f32().unwrap());

@@ -1,4 +1,5 @@
-use crate::{convert, embeds, structs::Alliance};
+use crate::traits::Convert;
+use crate::{convert, embeds, structs::Alliance, structs::Nation};
 
 use crate::types::Command;
 use crate::types::{Context, Error};
@@ -7,31 +8,18 @@ use crate::types::{Context, Error};
 async fn who(
     ctx: Context<'_>,
     #[description = "Search for a nation or alliance"] search: String,
+    #[description = "If to search for an alliance"] is_alliance: Option<bool>,
 ) -> Result<(), Error> {
-    convert!(ctx, search = Alliance);
-
-    ctx.send(|f| f.embed(embeds::alliance(&ctx, &search)))
-        .await?;
-
-    // let n = ctx.data().cache.get_nation(&input);
-    // match n {
-    //     Some(n) => {
-    //         ctx.send(|f| f.embed(crate::embeds::pnw::nation(&ctx, &n)))
-    //             .await?;
-    //     },
-    //     None => {
-    //         ctx.send(|f| f.embed(embeds::core::error(&ctx, "Nation Not Found")))
-    //             .await?;
-    //     },
-    // }
-
-    // match gotten_user {
-    //     Some(user) => {},
-    //     None => {
-    //         ctx.send(|f| f.embed(embeds::core::error(&ctx, "User Not Found")))
-    //             .await?;
-    //     },
-    // }
+    let temp = search.clone();
+    if is_alliance.unwrap_or(false) || Alliance::convert(&ctx, temp).await.is_ok() {
+        convert!(ctx, search = Alliance);
+        ctx.send(|f: &mut poise::CreateReply| f.embed(embeds::alliance(&ctx, &search)))
+            .await?;
+    } else {
+        convert!(ctx, search = Nation);
+        ctx.send(|f: &mut poise::CreateReply| f.embed(embeds::nation(&ctx, &search)))
+            .await?;
+    }
 
     Ok(())
 }
