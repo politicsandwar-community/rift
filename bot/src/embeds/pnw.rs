@@ -266,3 +266,52 @@ pub fn nation<'a>(
         ])
     }
 }
+
+pub fn war_odds<'a>(
+    ctx: &'a Context,
+    attr: Nation,
+    def: Nation,
+    ground_chance: &'a [f32; 4],
+    air_chance: &'a [f32; 4],
+    naval_chance: &'a [f32; 4],
+    nuke_chances: &'a f32,
+    missile_chances: &'a f32,
+    spy_chances: &'a [f32; 4],
+) -> impl Fn(&mut CreateEmbed) -> &mut CreateEmbed + 'a {
+    move |e: &mut CreateEmbed| {
+        e.colour(consts::embed::INFO_EMBED_COLOUR)
+            .fields([
+                ("Ground Battle", format_chance(ground_chance), true),
+                ("Air Strike", format_chance(air_chance), true),
+                ("Naval Battle", format_chance(naval_chance), true),
+                ("Nuke", percent(nuke_chances), true),
+                ("Missile", percent(missile_chances), true),
+                ("Spy Op", "Not Implimented".to_string(), true),
+            ])
+            .description(format!(
+                "{} vs {}",
+                strings::link(
+                    attr.name.clone(),
+                    format!("{}{}", "https://politicsandwar.com/nation/id=", attr.id),
+                ),
+                strings::link(
+                    def.name.clone(),
+                    format!("{}{ }", "https://politicsandwar.com/nation/id=", def.id),
+                )
+            ))
+    }
+}
+
+fn format_chance(chances: &[f32; 4]) -> String {
+    format!(
+        "Immense Triumph: {} \n Moderate Victory: {} \n Phyric victory: {} \n Utter Failure: {}",
+        percent(&chances[0]),
+        percent(&chances[1]),
+        percent(&chances[2]),
+        percent(&chances[3]),
+    )
+}
+
+fn percent(num: &f32) -> String {
+    format!("{}%", (num * 100.0).round())
+}
