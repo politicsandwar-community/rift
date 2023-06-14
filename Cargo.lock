@@ -464,6 +464,7 @@ dependencies = [
 [[package]]
 name = "enum_derive"
 version = "0.1.0"
+source = "git+https://github.com/mrvillage/rift-lang.git#829acdcf34ea8f6495e98219ffe2db106bb3fb6e"
 dependencies = [
  "quote",
  "syn 1.0.109",
@@ -499,6 +500,7 @@ checksum = "0206175f82b8d6bf6652ff7d71a1e27fd2e4efde587fd368662814d6ec1d9ce0"
 [[package]]
 name = "expose_derive"
 version = "0.1.0"
+source = "git+https://github.com/mrvillage/rift-lang.git#829acdcf34ea8f6495e98219ffe2db106bb3fb6e"
 dependencies = [
  "quote",
  "syn 1.0.109",
@@ -1221,6 +1223,7 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 [[package]]
 name = "pnwkit"
 version = "3.0.0-alpha.15"
+source = "git+https://github.com/mrvillage/pnwkit.git#473efcf75e4b9722801834d346045c9b4340edfb"
 dependencies = [
  "futures-util",
  "pnwkit-core",
@@ -1232,6 +1235,7 @@ dependencies = [
 [[package]]
 name = "pnwkit-core"
 version = "0.1.0-alpha.15"
+source = "git+https://github.com/mrvillage/pnwkit.git#473efcf75e4b9722801834d346045c9b4340edfb"
 dependencies = [
  "async-trait",
  "bigdecimal",
@@ -1453,6 +1457,7 @@ dependencies = [
 [[package]]
 name = "rift-lang"
 version = "0.1.0"
+source = "git+https://github.com/mrvillage/rift-lang.git#829acdcf34ea8f6495e98219ffe2db106bb3fb6e"
 dependencies = [
  "bigdecimal",
  "dashmap",
