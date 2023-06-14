@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use bigdecimal::BigDecimal;
-use expose_derive::Expose;
+use rift_lang::Expose;
 use model_derive::Model;
 use time::OffsetDateTime;
 

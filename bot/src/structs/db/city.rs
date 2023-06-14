@@ -1,6 +1,6 @@
 use bigdecimal::BigDecimal;
-use expose_derive::Expose;
 use model_derive::Model;
+use rift_lang::Expose;
 use time::OffsetDateTime;
 
 #[derive(Clone, Debug, Expose, Model)]

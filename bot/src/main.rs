@@ -33,7 +33,7 @@ async fn main() {
                 ..Default::default()
             },
             on_error: |e| Box::pin(errors::on_error(e)),
-            listener: |ctx, event, framework, data| {
+            event_handler: |ctx, event, framework, data| {
                 Box::pin(listener::listener(ctx, event, framework, data))
             },
             ..Default::default()
@@ -42,7 +42,7 @@ async fn main() {
         .intents(
             serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT,
         )
-        .user_data_setup(move |_ctx, _ready, _framework| Box::pin(async move { Ok(data) }));
+        .setup(move |_ctx, _ready, _framework| Box::pin(async move { Ok(data) }));
 
     framework.run().await.unwrap();
     println!("STARTED");

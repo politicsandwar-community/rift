@@ -1,4 +1,4 @@
-use enum_derive::Enum;
+use rift_lang::Enum;
 use strum_macros::Display;
 
 #[derive(Clone, Debug, Display, Enum, sqlx::Type)]

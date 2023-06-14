@@ -29,11 +29,11 @@ pub async fn on_error(e: FrameworkError<'_, Data, Error>) {
         FrameworkError::DmOnly { ctx } => {
             ctx.send(|f| f.embed(embeds::dm_only_error(&ctx))).await;
         },
-        FrameworkError::DynamicPrefix { error } => {},
+        FrameworkError::DynamicPrefix { error, .. } => {},
         FrameworkError::GuildOnly { ctx } => {
             ctx.send(|r| r.embed(embeds::guild_only_error(&ctx))).await;
         },
-        FrameworkError::Listener {
+        FrameworkError::EventHandler {
             error,
             ctx,
             event,
@@ -49,7 +49,7 @@ pub async fn on_error(e: FrameworkError<'_, Data, Error>) {
         } => {},
         FrameworkError::NotAnOwner { ctx } => {},
         FrameworkError::NsfwOnly { ctx } => {},
-        FrameworkError::Setup { error } => {
+        FrameworkError::Setup { error, .. } => {
             panic!("{}", error);
         },
         _ => {},

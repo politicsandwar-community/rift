@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use bigdecimal::BigDecimal;
-use expose_derive::Expose;
 use model_derive::Model;
+use rift_lang::Expose;
 use time::OffsetDateTime;
 
 use crate::{

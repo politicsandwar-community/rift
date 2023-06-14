@@ -1,6 +1,6 @@
 use bigdecimal::BigDecimal;
-use expose_derive::Expose;
 use pnwkit::Object;
+use rift_lang::Expose;
 
 #[derive(Clone, Debug, sqlx::Type, Expose)]
 #[sqlx(type_name = "resources")]
