@@ -284,8 +284,8 @@ pub fn war_odds<'a>(
                 ("Ground Battle", format_chance(ground_chance), true),
                 ("Air Strike", format_chance(air_chance), true),
                 ("Naval Battle", format_chance(naval_chance), true),
-                ("Nuke", percent(nuke_chances), true),
-                ("Missile", percent(missile_chances), true),
+                ("Nuke", format!("{:.2}%", nuke_chances * 100.0), true),
+                ("Missile", format!("{:.2}%", missile_chances * 100.0), true),
                 ("Spy Op", "Not Implimented".to_string(), true),
             ])
             .description(format!(
@@ -304,14 +304,10 @@ pub fn war_odds<'a>(
 
 fn format_chance(chances: &[f32; 4]) -> String {
     format!(
-        "Immense Triumph: {} \n Moderate Victory: {} \n Phyric victory: {} \n Utter Failure: {}",
-        percent(&chances[0]),
-        percent(&chances[1]),
-        percent(&chances[2]),
-        percent(&chances[3]),
+        "Immense Triumph: {:.2}% \n Moderate Victory: {:.2}% \n Phyric victory: {:.2}% \n Utter Failure: {:.2}%",
+        &chances[0] * 100.0,
+        &chances[1] * 100.0,
+        &chances[2] * 100.0,
+        &chances[3] * 100.0,
     )
-}
-
-fn percent(num: &f32) -> String {
-    format!("{}%", (num * 100.0).round())
 }
