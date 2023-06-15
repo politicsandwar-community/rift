@@ -292,11 +292,11 @@ pub fn war_odds<'a>(
                 "{} vs {}",
                 strings::link(
                     attr.name.clone(),
-                    format!("{}{}", "https://politicsandwar.com/nation/id=", attr.id),
+                    format!("https://politicsandwar.com/nation/id={}", attr.id),
                 ),
                 strings::link(
                     def.name.clone(),
-                    format!("{}{ }", "https://politicsandwar.com/nation/id=", def.id),
+                    format!("https://politicsandwar.com/nation/id={}", def.id),
                 )
             ))
     }
