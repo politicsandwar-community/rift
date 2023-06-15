@@ -296,7 +296,7 @@ pub fn war_odds<'a>(
                 ),
                 strings::link(
                     def.name.clone(),
-                    format!("{}{ }", "https://politicsandwar.com/nation/id=", def.id),
+                    format!("https://politicsandwar.com/nation/id={}", def.id),
                 )
             ))
     }
