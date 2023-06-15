@@ -286,7 +286,7 @@ pub fn war_odds<'a>(
                 ("Naval Battle", format_chance(naval_chance), true),
                 ("Nuke", percent(nuke_chances), true),
                 ("Missile", percent(missile_chances), true),
-                ("Spy Op", "Not Implimented".to_string(), true),
+                ("Spy Op", "Not Implemented".to_string(), true),
             ])
             .description(format!(
                 "{} vs {}",
