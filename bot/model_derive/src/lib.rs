@@ -263,6 +263,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                     .expect("field attribute must be a string");
                 alias.value()
             } else {
+                #[allow(clippy::redundant_clone)]
                 name.clone()
             };
             if name == "lock" {
