@@ -536,6 +536,7 @@ model nations {
   turns_since_last_city    Int
   turns_since_last_project Int
   projects                 Int
+  project_bits             BigInt
   wars_won                 Int
   wars_lost                Int
   tax_id                   Int
