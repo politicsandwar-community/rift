@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use bigdecimal::BigDecimal;
-use rift_lang::Expose;
 use model_derive::Model;
+use rift_lang::Expose;
 use time::OffsetDateTime;
 
 use crate::{
@@ -79,6 +79,8 @@ pub struct Nation {
     pub turns_since_last_project: i32,
     #[expose]
     pub projects: i32,
+    #[expose]
+    pub project_bits: i64,
     #[expose]
     pub wars_won: i32,
     #[expose]
