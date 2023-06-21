@@ -1,9 +1,11 @@
+use bigdecimal::ToPrimitive;
+
 use crate::embeds;
 use crate::structs::Nation;
 use crate::traits::Convert;
 use crate::types::Command;
 use crate::types::{Context, Error};
-
+use crate::utils::{get_project, ProjectStrs};
 #[poise::command(slash_command, prefix_command)]
 async fn odds(
     ctx: Context<'_>,
@@ -52,8 +54,18 @@ async fn odds(
         naval_fail * naval_fail * naval_fail,
     ];
 
-    let nuke_chances: f32 = 1.0;
-    let missile_chances: f32 = 1.0;
+    let nuke_chances: f32 = if get_project(def.project_bits, ProjectStrs::VitalDefenseSystem) {
+        0.8
+    } else {
+        1.0
+    };
+
+    let nuke_infra: [f32; 2] = [0.0, 0.0];
+    let missile_chances: f32 = if get_project(def.project_bits, ProjectStrs::IronDome) {
+        0.5
+    } else {
+        1.0
+    };
     let spy_chances = [1.0, 1.0, 1.0, 1.0];
     ctx.send(|f| {
         f.embed(embeds::war_odds(
