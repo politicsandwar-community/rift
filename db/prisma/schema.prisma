@@ -939,18 +939,18 @@ model webhooks {
 model tradeprices {
   id        Int?
   date      DateTime? @db.Timestamptz(6)
-  coal      Float?
-  oil       Float?
-  uranium   Float?
-  iron      Float?
-  bauxite   Float?
-  lead      Float?
-  gasoline  Float?
-  munitions Float?
-  steel     Float?
-  aluminum  Float?
-  food      Float?
-  credits   Float?
+  coal      Decimal?  @db.Decimal
+  oil       Decimal?  @db.Decimal
+  uranium   Decimal?  @db.Decimal
+  iron      Decimal?  @db.Decimal
+  bauxite   Decimal?  @db.Decimal
+  lead      Decimal?  @db.Decimal
+  gasoline  Decimal?  @db.Decimal
+  munitions Decimal?  @db.Decimal
+  steel     Decimal?  @db.Decimal
+  aluminum  Decimal?  @db.Decimal
+  food      Decimal?  @db.Decimal
+  credits   Decimal?  @db.Decimal
 
   @@ignore
 }
