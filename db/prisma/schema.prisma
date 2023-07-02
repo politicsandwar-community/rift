@@ -934,3 +934,23 @@ model webhooks {
 
   @@ignore
 }
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tradeprices {
+  id        Int?
+  date      DateTime? @db.Timestamptz(6)
+  coal      Float?
+  oil       Float?
+  uranium   Float?
+  iron      Float?
+  bauxite   Float?
+  lead      Float?
+  gasoline  Float?
+  munitions Float?
+  steel     Float?
+  aluminum  Float?
+  food      Float?
+  credits   Float?
+
+  @@ignore
+}
