@@ -22,6 +22,8 @@ pub trait Model: Clone + Debug + Send + Sync + 'static {
 
     fn start_subscriptions(data: &Data);
 
+    async fn refresh_from_api(data: &Data) -> Result<(), Error>;
+
     async fn lock(&self, data: &Data) -> crate::structs::LockGuard<Self::Key>
     where
         Self::Key:

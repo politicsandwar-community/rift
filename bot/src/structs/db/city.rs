@@ -7,7 +7,7 @@ use time::OffsetDateTime;
 #[table = "cities"]
 #[cache_name = "city"]
 #[subscriptions = "City"]
-#[has_pnwkit]
+#[has_pnwkit = "cities"]
 pub struct City {
     #[expose]
     pub id: i32,

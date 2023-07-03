@@ -105,4 +105,5 @@ cache!(
     nation, nations, Nation, nation_locks
     user, users, User, user_locks
     mention, mentions, Mention, mention_locks
+    tradeprice, tradeprices, Tradeprice, tradeprice_locks
 );

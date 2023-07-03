@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use bigdecimal::BigDecimal;
 use model_derive::Model;
 use rift_lang::Expose;
@@ -8,7 +7,7 @@ use time::OffsetDateTime;
 #[table = "tradeprices"]
 #[cache_name = "tradeprice"]
 #[subscriptions = "Tradeprice"]
-#[has_pnwkit]
+#[has_pnwkit = "tradeprices"]
 pub struct Tradeprice {
     #[expose]
     pub id: i32,

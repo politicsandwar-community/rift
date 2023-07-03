@@ -937,20 +937,20 @@ model webhooks {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model tradeprices {
-  id        Int?
-  date      DateTime? @db.Timestamptz(6)
-  coal      Decimal?  @db.Decimal
-  oil       Decimal?  @db.Decimal
-  uranium   Decimal?  @db.Decimal
-  iron      Decimal?  @db.Decimal
-  bauxite   Decimal?  @db.Decimal
-  lead      Decimal?  @db.Decimal
-  gasoline  Decimal?  @db.Decimal
-  munitions Decimal?  @db.Decimal
-  steel     Decimal?  @db.Decimal
-  aluminum  Decimal?  @db.Decimal
-  food      Decimal?  @db.Decimal
-  credits   Decimal?  @db.Decimal
+  id        Int
+  date      DateTime @db.Timestamptz(6)
+  coal      Decimal  @db.Decimal
+  oil       Decimal  @db.Decimal
+  uranium   Decimal  @db.Decimal
+  iron      Decimal  @db.Decimal
+  bauxite   Decimal  @db.Decimal
+  lead      Decimal  @db.Decimal
+  gasoline  Decimal  @db.Decimal
+  munitions Decimal  @db.Decimal
+  steel     Decimal  @db.Decimal
+  aluminum  Decimal  @db.Decimal
+  food      Decimal  @db.Decimal
+  credits   Decimal  @db.Decimal
 
   @@ignore
 }

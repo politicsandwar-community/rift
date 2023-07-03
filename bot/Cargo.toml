@@ -31,8 +31,8 @@ features = ["builder", "client", "gateway", "model", "utils", "collector"]
 [dependencies.pnwkit]
 version = "3.0.0-alpha.15"
 features = ["async", "subscriptions", "uuid", "bigdecimal", "time"]
-git = "https://github.com/mrvillage/pnwkit.git"
-# path = "../../pnwkit/pnwkit-rs"
+# git = "https://github.com/mrvillage/pnwkit.git"
+path = "../../pnwkit/pnwkit-rs"
 
 [dependencies.rift-lang]
 version = "0.1.0"

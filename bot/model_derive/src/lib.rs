@@ -60,6 +60,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let table = get_struct_attr(ast, "table");
     let cache_name = get_struct_attr(ast, "cache_name");
+    let pnwkit_field = get_option_attr(ast, "has_pnwkit");
     let primary_keys: Vec<String> = get_option_attr(ast, "primary_key")
         .unwrap_or_else(|| "id".to_string())
         .split(',')
@@ -238,6 +239,31 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         syn::parse_str(format!("update_{}", cache_name).as_str()).unwrap();
     let delete_cache_name: Expr =
         syn::parse_str(format!("remove_{}", cache_name).as_str()).unwrap();
+
+    let pnwkit_fields = data.fields.iter().filter_map(|field| {
+        let alias = field.attrs.iter().find(|attr| attr.path.is_ident("field"));
+        let name = field
+            .ident
+            .as_ref()
+            .expect("fields must have an identifier")
+            .to_string();
+        let field_custom = field
+            .attrs
+            .iter()
+            .find(|attr| attr.path.is_ident("field_custom"));
+        if name == "lock" || field_custom.is_none() {
+            return None;
+        }
+        Some(if let Some(alias) = alias {
+            let alias = alias
+                .parse_args::<syn::LitStr>()
+                .expect("field attribute must be a string");
+            alias.value()
+        } else {
+            #[allow(clippy::redundant_clone)]
+            name.clone()
+        })
+    });
 
     let object_exprs: Vec<(String, Option<Expr>)> = data
         .fields
@@ -419,7 +445,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                             if let Some(mut value) = value {
                                 let _lock = value.lock(&data).await;
                                 if let Err(e) = value.delete(&data).await {
-                                    panic!("error deleting   object: {}", e);
+                                    panic!("error deleting object: {}", e);
                                 }
                             } else {
                                 let mut value = #name::create_from_object(obj);
@@ -439,6 +465,30 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     };
 
     let lock_cache_name: Expr = syn::parse_str(format!("lock_{}", cache_name).as_str()).unwrap();
+
+    let refresh_from_api = match pnwkit_field {
+        Some(pnwkit_field) => quote! {
+            use pnwkit::{field, Field};
+
+            let mut query = data.kit.paginator(field(#pnwkit_field).will_paginate().set_argument("first".to_string(), 500.into())#(.add_field_leaf(#pnwkit_fields))*);
+            while let Some(obj) = query.next(data.kit.as_ref()).await {
+                let obj: pnwkit::Object = obj.into();
+                let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
+                if let Some(mut value) = value {
+                    let _lock = value.lock(&data).await;
+                    value.update_from_object(obj);
+                    value.save(&data, false).await?;
+                } else {
+                    let mut value = #name::create_from_object(obj);
+                    value.save(&data, true).await?;
+                }
+            }
+            Ok(())
+        },
+        None => quote! {
+            Ok(())
+        },
+    };
 
     let gen = quote! {
         #[async_trait::async_trait]
@@ -491,6 +541,10 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             #subscriptions
+
+            async fn refresh_from_api(data: &crate::structs::data::Data) -> Result<(), crate::types::Error> {
+                #refresh_from_api
+            }
 
             async fn lock(&self, data: &crate::structs::data::Data) -> crate::structs::LockGuard<Self::Key> {
                 data.cache.#lock_cache_name(&self.#cache_id).await
