@@ -469,9 +469,11 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
     let refresh_from_api = match pnwkit_field {
         Some(pnwkit_field) => quote! {
             use pnwkit::{field, Field};
+            println!("REFRESH FROM API");
 
             let mut query = data.kit.paginator(field(#pnwkit_field).will_paginate().set_argument("first".to_string(), 500.into())#(.add_field_leaf(#pnwkit_fields))*);
             while let Some(obj) = query.next(data.kit.as_ref()).await {
+                println!("1");
                 let obj: pnwkit::Object = obj.into();
                 let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
                 if let Some(mut value) = value {

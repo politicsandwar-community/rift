@@ -4,6 +4,8 @@ use sqlx::postgres::PgPoolOptions;
 
 use crate::traits::Model;
 
+use super::Nation;
+
 #[derive(Clone, Debug)]
 pub struct Data {
     pub pool: Arc<sqlx::PgPool>,
@@ -29,7 +31,7 @@ impl Data {
 
         let data = Data { pool, cache, kit };
 
-        data.cache.start_subscriptions(&data);
+        data.cache.start_subscriptions(&data).await;
 
         let d = data.clone();
         tokio::spawn(async move {
@@ -58,6 +60,10 @@ impl Data {
                 });
             }
         });
+
+        Nation::refresh_from_api(&data)
+            .await
+            .expect("failed to refresh nations");
 
         data
     }
