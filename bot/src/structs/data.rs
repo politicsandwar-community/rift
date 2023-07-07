@@ -61,10 +61,6 @@ impl Data {
             }
         });
 
-        Nation::refresh_from_api(&data)
-            .await
-            .expect("failed to refresh nations");
-
         data
     }
 }
