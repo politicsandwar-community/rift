@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 use bigdecimal::BigDecimal;
 use pnwkit::Object;
 use rift_lang::Expose;
@@ -49,3 +51,35 @@ impl From<Object> for Resources {
         }
     }
 }
+
+impl Add<Resources> for Resources {
+    fn add(self, rhs: Self) -> Self::Output {
+        Self {
+            money: self.money + rhs.money,
+            coal: self.coal + rhs.coal,
+            oil: self.oil + rhs.oil,
+            uranium: self.uranium + rhs.uranium,
+            iron: self.iron + rhs.iron,
+            bauxite: self.bauxite + rhs.bauxite,
+            lead: self.lead + rhs.lead,
+            gasoline: self.gasoline + rhs.gasoline,
+            munitions: self.munitions + rhs.munitions,
+            steel: self.steel + rhs.steel,
+            aluminum: self.aluminum + rhs.aluminum,
+            food: self.food + rhs.food,
+        }
+    }
+
+    type Output = Self;
+}
+
+#[macro_export]
+macro_rules! resource_field {
+    ($resources:ident $($r:ident)*) => {
+      [
+          $(
+              (stringify!($r), format!("{:.2}", $resources.$r), true),
+          )*
+      ]
+    };
+  }
