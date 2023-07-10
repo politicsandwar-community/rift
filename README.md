@@ -4,7 +4,7 @@ Rift is a free-to-use multi purpose Discord bot for Politics & War!
 
 ## About Rift
 
-Rift was originally developed by Village for use by the community. Now development has been taken over by the community and it is being improved and rewritten in Rust!
+Rift was originally developed by Village for use by the community. Now members of the community are helpint to improve it and rewrite it in Rust!
 The original code can be found [here](https://github.com/mrvillage/rift).
 
 ## Contributing
