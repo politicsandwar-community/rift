@@ -32,13 +32,17 @@ macro_rules! cache {
                 )*
             }
 
-            pub fn refresh_from_api(&self, data: &crate::structs::Data) {
+            pub async fn refresh_from_api(&self, data: &crate::structs::Data) {
                 $(
                     let d = data.clone();
-                    tokio::spawn(async move {
-                        crate::structs::$type::refresh_from_api(&d).await.expect("Failed to refresh from API");
-                    });
+                    paste::paste! {
+                        #[allow(non_snake_case)]
+                        let [<$type _handle>] = tokio::spawn(async move {
+                            crate::structs::$type::refresh_from_api(&d).await.expect("Failed to refresh from API");
+                        });
+                    }
                 )*
+                $(paste::paste! { [<$type _handle>] }.await.unwrap();)*
             }
 
             paste::paste! {

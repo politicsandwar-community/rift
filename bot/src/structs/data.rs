@@ -12,7 +12,7 @@ pub struct Data {
 }
 
 impl Data {
-    pub async fn new() -> Self {
+    pub async fn new(refresh_from_api: bool) -> Self {
         let url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         let pool = Arc::new(
             PgPoolOptions::new()
@@ -30,6 +30,12 @@ impl Data {
         let data = Data { pool, cache, kit };
 
         data.cache.start_subscriptions(&data).await;
+        if refresh_from_api {
+            let d = data.clone();
+            tokio::spawn(async move {
+                d.cache.refresh_from_api(&d).await;
+            });
+        }
 
         let d = data.clone();
         tokio::spawn(async move {
