@@ -15,7 +15,7 @@ pub fn resources<'a>(
     move |e: &mut CreateEmbed| {
         e.colour(consts::embed::INFO_EMBED_COLOUR)
             .description(
-                "Revenue for".to_string()
+                "Revenue for ".to_string()
                     + &strings::link(
                         nation.name.clone(),
                         format!("https://politicsandwar.com/nation/id={}", nation.id),
