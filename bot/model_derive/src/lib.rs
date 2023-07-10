@@ -393,22 +393,19 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 tokio::spawn(async move {
                     let sub = data.kit.subscribe(pnwkit::SubscriptionModel::#name, pnwkit::SubscriptionEvent::Create).await.expect("subscription failed");
                     while let Some(obj) = sub.next().await {
-                        let data = data.clone();
-                        tokio::spawn(async move {
-                            let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
-                            if let Some(mut value) = value {
-                                let _lock = value.lock(&data).await;
-                                value.update_from_object(obj);
-                                if let Err(e) = value.save(&data, false).await {
-                                    panic!("error saving object: {}", e);
-                                }
-                            } else {
-                                let mut value = #name::create_from_object(obj);
-                                if let Err(e) = value.save(&data, true).await {
-                                    panic!("error saving object: {}", e);
-                                }
+                        let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
+                        if let Some(mut value) = value {
+                            let _lock = value.lock(&data).await;
+                            value.update_from_object(obj);
+                            if let Err(e) = value.save(&data, false).await {
+                                panic!("error saving object: {}", e);
                             }
-                        });
+                        } else {
+                            let mut value = #name::create_from_object(obj);
+                            if let Err(e) = value.save(&data, true).await {
+                                panic!("error saving object: {}", e);
+                            }
+                        }
                     }
                 });
                 // UPDATE
@@ -416,22 +413,19 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 tokio::spawn(async move {
                     let sub = data.kit.subscribe(pnwkit::SubscriptionModel::#name, pnwkit::SubscriptionEvent::Update).await.expect("subscription failed");
                     while let Some(obj) = sub.next().await {
-                        let data = data.clone();
-                        tokio::spawn(async move {
-                            let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
-                            if let Some(mut value) = value {
-                                let _lock = value.lock(&data).await;
-                                value.update_from_object(obj);
-                                if let Err(e) = value.save(&data, false).await {
-                                    panic!("error saving object: {}", e);
-                                }
-                            } else {
-                                let mut value = #name::create_from_object(obj);
-                                if let Err(e) = value.save(&data, true).await {
-                                    panic!("error saving object: {}", e);
-                                }
+                        let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
+                        if let Some(mut value) = value {
+                            let _lock = value.lock(&data).await;
+                            value.update_from_object(obj);
+                            if let Err(e) = value.save(&data, false).await {
+                                panic!("error saving object: {}", e);
                             }
-                        });
+                        } else {
+                            let mut value = #name::create_from_object(obj);
+                            if let Err(e) = value.save(&data, true).await {
+                                panic!("error saving object: {}", e);
+                            }
+                        }
                     }
                 });
                 // DELETE
@@ -439,21 +433,18 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 tokio::spawn(async move {
                     let sub = data.kit.subscribe(pnwkit::SubscriptionModel::#name, pnwkit::SubscriptionEvent::Delete).await.expect("subscription failed");
                     while let Some(obj) = sub.next().await {
-                        let data = data.clone();
-                        tokio::spawn(async move {
-                            let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
-                            if let Some(mut value) = value {
-                                let _lock = value.lock(&data).await;
-                                if let Err(e) = value.delete(&data).await {
-                                    panic!("error deleting object: {}", e);
-                                }
-                            } else {
-                                let mut value = #name::create_from_object(obj);
-                                if let Err(e) = value.delete(&data).await {
-                                    panic!("error deleting object: {}", e);
-                                }
+                        let mut value = data.cache.#get_cache_name(&obj.get("id").unwrap().value().as_i32().unwrap());
+                        if let Some(mut value) = value {
+                            let _lock = value.lock(&data).await;
+                            if let Err(e) = value.delete(&data).await {
+                                panic!("error deleting object: {}", e);
                             }
-                        });
+                        } else {
+                            let mut value = #name::create_from_object(obj);
+                            if let Err(e) = value.delete(&data).await {
+                                panic!("error deleting object: {}", e);
+                            }
+                        }
                     }
                 });
             }
