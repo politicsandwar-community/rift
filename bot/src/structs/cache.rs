@@ -32,6 +32,15 @@ macro_rules! cache {
                 )*
             }
 
+            pub fn refresh_from_api(&self, data: &crate::structs::Data) {
+                $(
+                    let d = data.clone();
+                    tokio::spawn(async move {
+                        crate::structs::$type::refresh_from_api(&d).await.expect("Failed to refresh from API");
+                    });
+                )*
+            }
+
             paste::paste! {
                 $(
                     #[allow(dead_code)]
