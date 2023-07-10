@@ -387,7 +387,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         let name: Expr = syn::parse_str(name.as_str()).unwrap();
         quote! {
 
-            fn start_subscriptions(d: &crate::structs::data::Data) {
+            async fn start_subscriptions(d: &crate::structs::data::Data) {
                 // CREATE
                 let data = d.clone();
                 tokio::spawn(async move {
@@ -410,6 +410,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 });
                 // UPDATE
                 let data = d.clone();
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
                 tokio::spawn(async move {
                     let sub = data.kit.subscribe(pnwkit::SubscriptionModel::#name, pnwkit::SubscriptionEvent::Update).await.expect("subscription failed");
                     while let Some(obj) = sub.next().await {
@@ -430,6 +431,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
                 });
                 // DELETE
                 let data = d.clone();
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
                 tokio::spawn(async move {
                     let sub = data.kit.subscribe(pnwkit::SubscriptionModel::#name, pnwkit::SubscriptionEvent::Delete).await.expect("subscription failed");
                     while let Some(obj) = sub.next().await {
@@ -451,7 +453,7 @@ fn impl_model_derive(ast: &syn::DeriveInput) -> TokenStream {
         }
     } else {
         quote! {
-            fn start_subscriptions(data: &crate::structs::data::Data) {}
+            async fn start_subscriptions(data: &crate::structs::data::Data) {}
         }
     };
 

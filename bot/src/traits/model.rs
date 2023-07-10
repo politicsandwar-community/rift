@@ -20,7 +20,7 @@ pub trait Model: Clone + Debug + Send + Sync + 'static {
 
     fn update_from_object(&mut self, o: Object);
 
-    fn start_subscriptions(data: &Data);
+    async fn start_subscriptions(data: &Data);
 
     async fn refresh_from_api(data: &Data) -> Result<(), Error>;
 

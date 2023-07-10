@@ -27,8 +27,8 @@ macro_rules! cache {
 
             pub async fn start_subscriptions(&self, data: &crate::structs::Data) {
                 $(
-                    crate::structs::$type::start_subscriptions(data);
-                    tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
+                    crate::structs::$type::start_subscriptions(data).await;
+                    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
                 )*
             }
 
