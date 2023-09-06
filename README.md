@@ -1,3 +1,5 @@
+This project is currently in stasis and not being developed, when it does development will continue back on the original repo [here](https://github.com/mrvillage/rift).
+
 # Welcome to Rift
 
 Rift is a free-to-use multi purpose Discord bot for Politics & War!
